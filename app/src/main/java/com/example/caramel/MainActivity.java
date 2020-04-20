@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable {
 
     private ImageButton addPositionBtn;
     private ListView listView;
@@ -61,6 +61,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
                 break;
+        }
+    }
+
+    //todo:count revenue
+    @Override
+    public void sellPosition(int position) {
+        Position positionToSell = adapter.getItem(position);
+        if (positionToSell != null) {
+            int quantityBeforeSelling = positionToSell.getQuantity();
+            if (quantityBeforeSelling > 0) {
+                positionToSell.setQuantity(quantityBeforeSelling - 1);
+                adapter.notifyDataSetChanged();
+                Toast.makeText(this, String.format("Продана позиция: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, String.format("Нет в наличии: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

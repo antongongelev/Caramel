@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,17 +19,19 @@ public class PositionAdapter extends ArrayAdapter<Position> {
 
     private Context context;
     private int resource;
+    private Saleable saleable;
 
     public PositionAdapter(@NonNull Context context, int resource, @NonNull List<Position> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
+        this.saleable = (Saleable) context;
     }
 
     @SuppressLint("ViewHolder")
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String name = Objects.requireNonNull(getItem(position)).getName();
         double price = Objects.requireNonNull(getItem(position)).getPrice();
         int quantity = Objects.requireNonNull(getItem(position)).getQuantity();
@@ -39,6 +42,14 @@ public class PositionAdapter extends ArrayAdapter<Position> {
         TextView tvName = convertView.findViewById(R.id.adapter_name);
         TextView tvPrice = convertView.findViewById(R.id.adapter_price);
         TextView tvQuantity = convertView.findViewById(R.id.adapter_quantity);
+        Button buttonSell = convertView.findViewById(R.id.sell_button);
+
+        buttonSell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saleable.sellPosition(position);
+            }
+        });
 
         tvName.setText(name);
         tvPrice.setText(String.format("%s руб/шт", price));
