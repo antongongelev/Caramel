@@ -9,16 +9,24 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
+import java.util.List;
+
 public class NewPositionActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText name;
     EditText price;
     EditText quantity;
+    List<Position> positions;
+    double revenue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_position);
+
+        positions = (List<Position>) getIntent().getSerializableExtra("positions");
+        revenue = getIntent().getDoubleExtra("revenue", 0);
 
         name = findViewById(R.id.name);
         price = findViewById(R.id.price);
@@ -36,11 +44,15 @@ public class NewPositionActivity extends AppCompatActivity implements View.OnCli
                 String name = this.name.getText().toString();
                 double price = Double.parseDouble(this.price.getText().toString());
                 int quantity = Integer.parseInt(this.quantity.getText().toString());
+
                 Position position = new Position(name, price, quantity);
-                validatePosition(position);
+                validateFields(position);
+                validateName(position);
 
                 Intent intent = new Intent(NewPositionActivity.this, MainActivity.class);
-                intent.putExtra("newPosition", position);
+                intent.putExtra("newPosition", (Serializable) position);
+                intent.putExtra("revenue", revenue);
+
                 startActivity(intent);
 
             } catch (NumberFormatException e) {
@@ -51,7 +63,7 @@ public class NewPositionActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void validatePosition(Position position) {
+    private void validateFields(Position position) {
         if (position.getName().length() == 0) {
             throw new IllegalArgumentException("Название не может быть пустое");
         }
@@ -60,6 +72,16 @@ public class NewPositionActivity extends AppCompatActivity implements View.OnCli
         }
         if (position.getQuantity() < 1) {
             throw new IllegalArgumentException("Количество должно быть, как минимум, 1");
+        }
+    }
+
+    private void validateName(Position position) {
+        if (positions != null && positions.size() > 0) {
+            for (int i = 0; i < positions.size(); i++) {
+                if (positions.get(i).getName().equals(position.getName())) {
+                    throw new IllegalArgumentException("Позиция с таким названием уже существует");
+                }
+            }
         }
     }
 }
