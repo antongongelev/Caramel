@@ -1,72 +1,66 @@
 package com.example.caramel;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText itemET;
-    private Button button;
-    private ListView itemsList;
+    private ImageButton addPositionBtn;
+    private ListView listView;
+    static ArrayList<Position> positions = new ArrayList<>();
+    private PositionAdapter adapter;
 
-    private ArrayList<String> items;
-    private ArrayAdapter<String> adapter;
-
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        itemET = findViewById(R.id.item_edit_text);
-        button = findViewById(R.id.add_btn);
-        itemsList = findViewById(R.id.items_list);
+        Position position = (Position) getIntent().getSerializableExtra("newPosition");
+        if (position != null) {
+            if (isPositionUnique(position)) {
+                positions.add(position);
+                Toast.makeText(this, position.getCreatedMessage(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, String.format("Позиция с именем \'%s\' уже существует!", position.getName()), Toast.LENGTH_LONG).show();
+            }
+        }
 
-        items = FileHelper.readData(this);
+        addPositionBtn = findViewById(R.id.add_btn);
+        addPositionBtn.setOnClickListener(this);
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        itemsList.setAdapter(adapter);
+        adapter = new PositionAdapter(this, R.layout.position_adapter, positions);
+        listView = findViewById(R.id.position_list);
+        listView.setAdapter(adapter);
+    }
 
-        button.setOnClickListener(this);
-        itemsList.setOnItemClickListener(this);
+    public static boolean isPositionUnique(final Position position) {
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i).getName().equals(position.getName())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_btn:
-                String itemName = itemET.getText().toString();
-                if (itemName.length() > 0) {
-                    adapter.add(itemName);
-                    itemET.setText("");
-                    try {
-                        FileHelper.writeData(items, this);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(this, "Item added", Toast.LENGTH_SHORT).show();
-                }
+                Intent intent = new Intent(MainActivity.this, NewPositionActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;
         }
-
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        items.remove(position);
-        adapter.notifyDataSetChanged();
-        Toast.makeText(this, "Item Deleted", Toast.LENGTH_SHORT).show();
     }
 }
