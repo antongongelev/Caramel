@@ -1,5 +1,6 @@
 package com.example.caramel;
 
+import android.media.Image;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -12,12 +13,21 @@ public class Position implements Serializable, Parcelable {
     private String name;
     private double price;
     private int quantity;
+    private Image image;
+
+    public Position(String name, double price, int quantity, Image image) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.image = image;
+    }
 
     public Position(String name, double price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
     }
+
 
     protected Position(Parcel in) {
         name = in.readString();
@@ -49,6 +59,10 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
     }
 
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -59,6 +73,10 @@ public class Position implements Serializable, Parcelable {
 
     public int getQuantity() {
         return this.quantity;
+    }
+
+    public Image getImage() {
+        return this.image;
     }
 
     @NonNull

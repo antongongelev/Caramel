@@ -2,6 +2,7 @@ package com.example.caramel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,8 @@ public class PositionAdapter extends ArrayAdapter<Position> {
         TextView tvQuantity = convertView.findViewById(R.id.adapter_quantity);
         Button buttonSell = convertView.findViewById(R.id.sell_button);
 
+        tvPrice.setTextColor(Color.BLACK);
+        tvQuantity.setTextColor(quantity > 0 ? Color.BLUE : Color.RED);
         buttonSell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

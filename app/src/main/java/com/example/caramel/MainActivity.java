@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         populatePositionsWithTestData();
 
-        //pass data from NewPositionActivity
+        //get data from NewPositionActivity
         revenue = getIntent().getDoubleExtra("revenue", 0);
         Position position = (Position) getIntent().getSerializableExtra("newPosition");
         if (position != null && isPositionUnique(position)) {
@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //todo:add selling history
+    //todo:add menu for updating position
+    //todo: prevent losing data after minimizing app
 
     private boolean isPositionUnique(Position position) {
         for (int i = 0; i < positions.size(); i++) {
@@ -104,14 +106,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void sellPosition(int position) {
         Position positionToSell = adapter.getItem(position);
+
         if (positionToSell != null) {
             int quantityBeforeSelling = positionToSell.getQuantity();
             if (quantityBeforeSelling > 0) {
+
                 revenue += positionToSell.getPrice();
                 long roundedRevenue = round(revenue);
                 revenueText.setText(String.valueOf(roundedRevenue));
                 positionToSell.setQuantity(quantityBeforeSelling - 1);
                 adapter.notifyDataSetChanged();
+
                 Toast.makeText(this, String.format("Продана позиция: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, String.format("Нет в наличии: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
