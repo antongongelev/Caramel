@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,7 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static java.lang.Math.round;
 
@@ -32,12 +35,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         populatePositionsWithTestData();
 
-        //get data from NewPositionActivity
+        //get data from PositionActivity
         revenue = getIntent().getDoubleExtra("revenue", 0);
         Position position = (Position) getIntent().getSerializableExtra("newPosition");
+        boolean wasUpdated = getIntent().getBooleanExtra("wasUpdated", false);
         if (position != null && isPositionUnique(position)) {
-            positions.add(position);
-            Toast.makeText(this, position.getCreatedMessage(), Toast.LENGTH_LONG).show();
+            if (wasUpdated) {
+                updatePosition(position);
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
+            } else {
+                positions.add(position);
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
+            }
         }
 
         //UI data binding
@@ -49,25 +58,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         adapter = new PositionAdapter(this, R.layout.position_adapter, positions);
         listView = findViewById(R.id.position_list);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
+                intent.putExtra("positions", positions);
+                intent.putExtra("revenue", revenue);
+                intent.putExtra("currentPosition", (Serializable) adapter.getItem(position));
+                startActivity(intent);
+            }
+        });
         listView.setAdapter(adapter);
+    }
+
+    private void updatePosition(Position position) {
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i).getId().equals(position.getId())) {
+                positions.set(i, position);
+                break;
+            }
+        }
     }
 
     //population positions with test data
     private void populatePositionsWithTestData() {
         if (positions.size() == 0) {
-            positions.add(new Position("Lipstick", 25.1, 4));
-            positions.add(new Position("Cream", 500, 7));
-            positions.add(new Position("Shampoo", 800.50, 10));
+            positions.add(new Position(UUID.randomUUID().toString(), "Lipstick", 25.1, 4));
+            positions.add(new Position(UUID.randomUUID().toString(), "Cream", 500, 7));
+            positions.add(new Position(UUID.randomUUID().toString(), "Shampoo", 800.50, 10));
         }
     }
 
     //todo:add selling history
-    //todo:add menu for updating position
-    //todo: prevent losing data after minimizing app
+    //todo:add picture loading for positions
 
     private boolean isPositionUnique(Position position) {
         for (int i = 0; i < positions.size(); i++) {
-            if (positions.get(i).getName().equals(position.getName())) {
+            if (positions.get(i).equals(position)) {
                 return false;
             }
         }
@@ -93,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_btn:
-                Intent intent = new Intent(MainActivity.this, NewPositionActivity.class);
+                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
                 intent.putExtra("positions", positions);
                 intent.putExtra("revenue", revenue);
                 startActivity(intent);
