@@ -1,6 +1,6 @@
 package com.example.caramel;
 
-import android.media.Image;
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,9 +14,9 @@ public class Position implements Serializable, Parcelable {
     private String name;
     private double price;
     private int quantity;
-    private Image image;
+    private Bitmap image;
 
-    public Position(String id, String name, double price, int quantity, Image image) {
+    public Position(String id, String name, double price, int quantity, Bitmap image) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -31,18 +31,13 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
     }
 
-    public Position(String name, double price, int quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
 
     protected Position(Parcel in) {
         id = in.readString();
         name = in.readString();
         price = in.readDouble();
         quantity = in.readInt();
+        image = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
     public static final Creator<Position> CREATOR = new Creator<Position>() {
@@ -73,7 +68,7 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
     }
 
-    public void setImage(Image image) {
+    public void setImage(Bitmap image) {
         this.image = image;
     }
 
@@ -93,7 +88,7 @@ public class Position implements Serializable, Parcelable {
         return this.quantity;
     }
 
-    public Image getImage() {
+    public Bitmap getImage() {
         return this.image;
     }
 
@@ -117,5 +112,6 @@ public class Position implements Serializable, Parcelable {
         dest.writeString(name);
         dest.writeDouble(price);
         dest.writeInt(quantity);
+        dest.writeParcelable(image, flags);
     }
 }

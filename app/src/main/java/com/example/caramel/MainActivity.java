@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         revenue = getIntent().getDoubleExtra("revenue", 0);
         Position position = (Position) getIntent().getSerializableExtra("newPosition");
         boolean wasUpdated = getIntent().getBooleanExtra("wasUpdated", false);
-        if (position != null && isPositionUnique(position)) {
+        //think about this moment
+        if (position != null && (isPositionUnique(position) || wasUpdated)) {
             if (wasUpdated) {
                 updatePosition(position);
                 Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
@@ -90,11 +91,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //todo:add selling history
-    //todo:add picture loading for positions
+    //todo:restore data after minimizing application
 
     private boolean isPositionUnique(Position position) {
         for (int i = 0; i < positions.size(); i++) {
-            if (positions.get(i).equals(position)) {
+            if (position.equals(positions.get(i))) {
                 return false;
             }
         }
