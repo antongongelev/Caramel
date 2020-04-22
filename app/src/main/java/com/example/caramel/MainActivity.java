@@ -1,6 +1,7 @@
 package com.example.caramel;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.Serializable;
@@ -43,10 +45,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (position != null && (isPositionUnique(position) || wasUpdated)) {
             if (wasUpdated) {
                 updatePosition(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG)
+                     .show();
             } else {
                 positions.add(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG)
+                     .show();
             }
         }
 
@@ -59,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         adapter = new PositionAdapter(this, R.layout.position_adapter, positions);
         listView = findViewById(R.id.position_list);
+
+        //updating
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -69,6 +75,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
         });
+
+        //deletion
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setTitle("Удалить товар?")
+                        .setMessage("Товар будет удален из списка")
+                        .setNegativeButton("Нет", null)
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                positions.remove(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .show();
+                return true;
+            }
+        });
+
         listView.setAdapter(adapter);
     }
 
@@ -92,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //todo:add selling history
     //todo:restore data after minimizing application
+    //todo:add ability to remove position
 
     private boolean isPositionUnique(Position position) {
         for (int i = 0; i < positions.size(); i++) {

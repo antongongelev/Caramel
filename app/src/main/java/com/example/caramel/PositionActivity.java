@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PositionActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,7 +39,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     boolean isUpdateMode;
     boolean wasUpdated;
 
-    //todo: check if we receive current position and in this case toggle isUpdateMode ???
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,13 +93,17 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         startActivityForResult(intent, 100);
     }
 
-    //todo: sometimes get error, because data == null
+    //sometimes get error, because data == null
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 100) {
-            Bitmap captureImage = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-            positionImg.setImageBitmap(captureImage);
-            wasUpdated = true;
+            try {
+                Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+                positionImg.setImageBitmap(captureImage);
+                wasUpdated = true;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -113,7 +115,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             int quantity = Integer.parseInt(this.quantity.getText().toString());
             //mb need to invalidate ImageView first
             Bitmap positionImg = ((BitmapDrawable) this.positionImg.getDrawable()).getBitmap();
-            //add image comparison
             Position position = new Position(id, name, price, quantity, positionImg);
 
             if (isUpdateMode && !position.equals(currentPosition)) {
