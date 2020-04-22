@@ -3,6 +3,7 @@ package com.example.caramel;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,7 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,10 +20,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.example.caramel.Position.savePositions;
 import static java.lang.Math.round;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable, StateManager {
 
+    SharedPreferences sharedPreferences;
     private ImageButton addPositionBtn;
     private Button historyBtn;
     private ListView listView;
@@ -38,22 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        populatePositionsWithTestData();
 
-        //get data from PositionActivity
-        revenue = getIntent().getDoubleExtra("revenue", 0);
-        Position position = (Position) getIntent().getSerializableExtra("newPosition");
-        boolean wasUpdated = getIntent().getBooleanExtra("wasUpdated", false);
-        //think about this moment
-        if (position != null && (isPositionUnique(position) || wasUpdated)) {
-            if (wasUpdated) {
-                updatePosition(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
-            } else {
-                positions.add(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
-            }
-        }
+        loadData();
+        populatePositionsWithTestData();
 
         //UI data binding
         revenueText = findViewById(R.id.revenue);
@@ -72,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, PositionActivity.class);
-                intent.putExtra("positions", positions);
-                intent.putExtra("revenue", revenue);
                 intent.putExtra("currentPosition", (Serializable) adapter.getItem(position));
                 startActivity(intent);
             }
@@ -93,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void onClick(DialogInterface dialog, int which) {
                                 positions.remove(position);
                                 adapter.notifyDataSetChanged();
+                                saveData();
                             }
                         })
                         .show();
@@ -103,13 +91,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView.setAdapter(adapter);
     }
 
-    private void updatePosition(Position position) {
-        for (int i = 0; i < positions.size(); i++) {
-            if (positions.get(i).getId().equals(position.getId())) {
-                positions.set(i, position);
-                break;
-            }
-        }
+    @Override
+    public void saveData() {
+        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        savePositions(editor, positions);
+        editor.putString("revenue", String.valueOf(revenue));
+
+        editor.apply();
+    }
+
+    @Override
+    public void loadData() {
+        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        String revenue = sharedPreferences.getString("revenue", "");
+        positions = Position.loadPositions(sharedPreferences);
+        this.revenue = Double.parseDouble(revenue);
     }
 
     //population positions with test data
@@ -119,33 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             positions.add(new Position(UUID.randomUUID().toString(), "Cream", 500, 7));
             positions.add(new Position(UUID.randomUUID().toString(), "Shampoo", 800.50, 10));
         }
-    }
-
-    //todo:add selling history
-    //todo:restore data after minimizing application
-
-    private boolean isPositionUnique(Position position) {
-        for (int i = 0; i < positions.size(); i++) {
-            if (position.equals(positions.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("positions", positions);
-        outState.putDouble("revenue", revenue);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        positions = savedInstanceState.getParcelableArrayList("positions");
-        revenue = savedInstanceState.getDouble("revenue");
-        revenueText.setText(String.valueOf(round(revenue)));
     }
 
     @Override
@@ -185,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 soldPositions.add(positionToSell);
 
                 adapter.notifyDataSetChanged();
+                saveData();
 
                 Toast.makeText(this, String.format("Продана позиция: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
             } else {

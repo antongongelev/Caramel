@@ -1,14 +1,20 @@
 package com.example.caramel;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Position implements Serializable, Parcelable {
@@ -118,6 +124,22 @@ public class Position implements Serializable, Parcelable {
     public static String getTime() {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM HH:mm");
         return format.format(new Date());
+    }
+
+    //Parse arrayList to json
+    public static void savePositions(SharedPreferences.Editor editor, ArrayList<Position> positions) {
+        Gson gson = new Gson();
+        String positionsGson = gson.toJson(positions);
+        editor.putString("positions", positionsGson);
+    }
+
+    //Parse json to arrayList
+    public static ArrayList<Position> loadPositions(SharedPreferences sharedPreferences) {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("positions", null);
+        Type type = new TypeToken<ArrayList<Position>>() {
+        }.getType();
+        return gson.fromJson(json, type) == null ? new ArrayList<Position>() : (ArrayList<Position>) gson.fromJson(json, type);
     }
 
     @Override

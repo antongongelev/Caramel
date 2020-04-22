@@ -2,6 +2,7 @@ package com.example.caramel;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,12 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
-public class PositionActivity extends AppCompatActivity implements View.OnClickListener {
+import static com.example.caramel.Position.savePositions;
 
+public class PositionActivity extends AppCompatActivity implements View.OnClickListener, StateManager {
+
+    SharedPreferences sharedPreferences;
     TextView tvTitle;
     Button button;
     ImageButton cameraBtn;
@@ -33,7 +36,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     EditText name;
     EditText price;
     EditText quantity;
-    List<Position> positions;
+    ArrayList<Position> positions;
     Position currentPosition;
     double revenue;
     boolean isUpdateMode;
@@ -43,12 +46,17 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
+        loadData();
 
         currentPosition = (Position) getIntent().getSerializableExtra("currentPosition");
-        positions = (List<Position>) getIntent().getSerializableExtra("positions");
-        revenue = getIntent().getDoubleExtra("revenue", 0);
         isUpdateMode = currentPosition != null;
 
+        //camera permission
+        if (ContextCompat.checkSelfPermission(PositionActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(PositionActivity.this, new String[]{Manifest.permission.CAMERA}, 100);
+        }
+
+        //view binding
         name = findViewById(R.id.name);
         price = findViewById(R.id.price);
         quantity = findViewById(R.id.quantity);
@@ -57,6 +65,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         cameraBtn = findViewById(R.id.camera_btn);
         positionImg = findViewById(R.id.position_img);
 
+        //data setting
         tvTitle.setText(isUpdateMode ? "Информация о товаре" : "Новый товар");
         button.setText(isUpdateMode ? "Принять" : "Добавить");
         positionImg.setImageBitmap(isUpdateMode ? currentPosition.getImage() : null);
@@ -64,12 +73,28 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         price.setText(isUpdateMode ? String.valueOf(currentPosition.getPrice()) : "");
         quantity.setText(isUpdateMode ? String.valueOf(currentPosition.getQuantity()) : "");
 
-        if (ContextCompat.checkSelfPermission(PositionActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(PositionActivity.this, new String[]{Manifest.permission.CAMERA}, 100);
-        }
-
+        //click listening
         button.setOnClickListener(this);
         cameraBtn.setOnClickListener(this);
+    }
+
+    @Override
+    public void saveData() {
+        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        savePositions(editor, positions);
+        editor.putString("revenue", String.valueOf(revenue));
+
+        editor.apply();
+    }
+
+    @Override
+    public void loadData() {
+        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        String revenue = sharedPreferences.getString("revenue", "");
+        positions = Position.loadPositions(sharedPreferences);
+        this.revenue = Double.parseDouble(revenue);
     }
 
     @Override
@@ -124,17 +149,37 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             validateFields(position);
             validateName(position);
 
-            Intent intent = new Intent(PositionActivity.this, MainActivity.class);
-            intent.putExtra("newPosition", (Serializable) position);
-            intent.putExtra("wasUpdated", wasUpdated);
-            intent.putExtra("revenue", revenue);
+            if (isUpdateMode) {
+                updatePosition(position);
+            } else {
+                addPosition(position);
+            }
+            saveData();
 
+            Intent intent = new Intent(PositionActivity.this, MainActivity.class);
             startActivity(intent);
 
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Пожалуйста, проверьте введенные данные", Toast.LENGTH_SHORT).show();
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void addPosition(Position position) {
+        positions.add(position);
+        Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
+    }
+
+    private void updatePosition(Position position) {
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i).getId().equals(position.getId())) {
+                positions.set(i, position);
+                if (wasUpdated) {
+                    Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
         }
     }
 
@@ -145,8 +190,8 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         if (position.getPrice() < 0) {
             throw new IllegalArgumentException("Цена не может быть отрицательной");
         }
-        if (position.getQuantity() < 1) {
-            throw new IllegalArgumentException("Количество должно быть, как минимум, 1");
+        if (position.getQuantity() < 0) {
+            throw new IllegalArgumentException("Количество не может быть отрицательным");
         }
     }
 
