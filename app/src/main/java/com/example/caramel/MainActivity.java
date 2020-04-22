@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,8 +25,10 @@ import static java.lang.Math.round;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable {
 
     private ImageButton addPositionBtn;
+    private Button historyBtn;
     private ListView listView;
     static ArrayList<Position> positions = new ArrayList<>();
+    static ArrayList<Position> soldPositions = new ArrayList<>();
     private PositionAdapter adapter;
     private TextView revenueText;
     private double revenue;
@@ -45,12 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (position != null && (isPositionUnique(position) || wasUpdated)) {
             if (wasUpdated) {
                 updatePosition(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG)
-                     .show();
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
             } else {
                 positions.add(position);
-                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG)
-                     .show();
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -59,9 +60,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         revenueText.setText(String.valueOf(round(revenue)));
 
         addPositionBtn = findViewById(R.id.add_btn);
+        historyBtn = findViewById(R.id.history_button);
         addPositionBtn.setOnClickListener(this);
+        historyBtn.setOnClickListener(this);
 
-        adapter = new PositionAdapter(this, R.layout.position_adapter, positions);
+        adapter = new PositionAdapter(this, R.layout.sell_position_adapter, positions);
         listView = findViewById(R.id.position_list);
 
         //updating
@@ -120,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //todo:add selling history
     //todo:restore data after minimizing application
-    //todo:add ability to remove position
 
     private boolean isPositionUnique(Position position) {
         for (int i = 0; i < positions.size(); i++) {
@@ -150,11 +152,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_btn:
-                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
-                intent.putExtra("positions", positions);
-                intent.putExtra("revenue", revenue);
-                startActivity(intent);
+                Intent toPositionMenuIntent = new Intent(MainActivity.this, PositionActivity.class);
+                toPositionMenuIntent.putExtra("positions", positions);
+                toPositionMenuIntent.putExtra("revenue", revenue);
+                startActivity(toPositionMenuIntent);
                 break;
+            case R.id.history_button:
+                Intent toHistoryMenuIntent = new Intent(MainActivity.this, HistoryActivity.class);
+                toHistoryMenuIntent.putExtra("soldPositions", soldPositions);
+                toHistoryMenuIntent.putExtra("revenue", revenue);
+                startActivity(toHistoryMenuIntent);
             default:
                 break;
         }
@@ -172,6 +179,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 long roundedRevenue = round(revenue);
                 revenueText.setText(String.valueOf(roundedRevenue));
                 positionToSell.setQuantity(quantityBeforeSelling - 1);
+
+                //add to history
+                positionToSell.setSoldTime(Position.getTime());
+                soldPositions.add(positionToSell);
+
                 adapter.notifyDataSetChanged();
 
                 Toast.makeText(this, String.format("Продана позиция: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();

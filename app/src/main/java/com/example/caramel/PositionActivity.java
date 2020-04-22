@@ -58,7 +58,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         positionImg = findViewById(R.id.position_img);
 
         tvTitle.setText(isUpdateMode ? "Информация о товаре" : "Новый товар");
-        button.setText(isUpdateMode ? "Вернуться" : "Добавить");
+        button.setText(isUpdateMode ? "Принять" : "Добавить");
         positionImg.setImageBitmap(isUpdateMode ? currentPosition.getImage() : null);
         name.setText(isUpdateMode ? currentPosition.getName() : "");
         price.setText(isUpdateMode ? String.valueOf(currentPosition.getPrice()) : "");

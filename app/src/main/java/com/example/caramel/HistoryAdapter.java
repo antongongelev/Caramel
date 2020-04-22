@@ -16,17 +16,17 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-public class PositionAdapter extends ArrayAdapter<Position> {
+public class HistoryAdapter extends ArrayAdapter<Position> {
 
     private Context context;
     private int resource;
-    private Saleable saleable;
+    private Removable removable;
 
-    public PositionAdapter(@NonNull Context context, int resource, @NonNull List<Position> objects) {
+    public HistoryAdapter(@NonNull Context context, int resource, @NonNull List<Position> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
-        this.saleable = (Saleable) context;
+        this.removable = (Removable) context;
     }
 
     @SuppressLint("ViewHolder")
@@ -35,28 +35,27 @@ public class PositionAdapter extends ArrayAdapter<Position> {
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String name = Objects.requireNonNull(getItem(position)).getName();
         double price = Objects.requireNonNull(getItem(position)).getPrice();
-        int quantity = Objects.requireNonNull(getItem(position)).getQuantity();
+        String time = Objects.requireNonNull(getItem(position)).getSoldTime();
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         convertView = layoutInflater.inflate(resource, parent, false);
 
-        TextView tvName = convertView.findViewById(R.id.sell_adapter_name);
-        TextView tvPrice = convertView.findViewById(R.id.sell_adapter_price);
-        TextView tvQuantity = convertView.findViewById(R.id.sell_adapter_quantity);
-        Button buttonSell = convertView.findViewById(R.id.sell_button);
+        TextView tvName = convertView.findViewById(R.id.history_adapter_name);
+        TextView tvPrice = convertView.findViewById(R.id.history_adapter_price);
+        TextView tvTime = convertView.findViewById(R.id.history_adapter_time);
+        Button buttonRemove = convertView.findViewById(R.id.remove_button);
 
         tvPrice.setTextColor(Color.BLACK);
-        tvQuantity.setTextColor(quantity > 0 ? Color.BLUE : Color.RED);
-        buttonSell.setOnClickListener(new View.OnClickListener() {
+        buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saleable.sellPosition(position);
+                removable.removePosition(position);
             }
         });
 
         tvName.setText(name);
         tvPrice.setText(String.format("%s руб/шт", price));
-        tvQuantity.setText(String.format("%s шт", quantity));
+        tvTime.setText(String.format("дата: %s", time));
 
         return convertView;
     }

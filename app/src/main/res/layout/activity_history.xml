@@ -5,48 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".HistoryActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/linearLayout_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp">
 
-        <ImageButton
-            android:id="@+id/add_btn"
-            style="@android:style/Widget.Material.Light.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="55dp"
-            android:background="#00FFFFFF"
-            android:backgroundTint="#00FFFFFF"
-            android:scaleType="center"
-            android:tint="#00BCD4"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.954"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@android:drawable/ic_input_add" />
-
         <Button
-            android:id="@+id/history_button"
+            android:id="@+id/sells_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:backgroundTint="#FFFFFF"
-            android:text="История"
+            android:text="Продажи"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.773"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textView_history"
             android:layout_width="99dp"
             android:layout_height="46dp"
             android:autoSizeTextType="none"
@@ -61,7 +43,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/revenue"
+            android:id="@+id/revenue_history"
             android:layout_width="151dp"
             android:layout_height="44dp"
             android:ems="10"
@@ -72,15 +54,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.38"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.727" />
+            app:layout_constraintStart_toStartOf="@+id/textView_history"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ListView
-        android:id="@+id/position_list"
+        android:id="@+id/sold_position_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF" />
 </LinearLayout>

@@ -7,7 +7,7 @@
     android:weightSum="100">
 
     <TextView
-        android:id="@+id/adapter_name"
+        android:id="@+id/sell_adapter_name"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_weight="50"
@@ -29,7 +29,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/adapter_price"
+                android:id="@+id/sell_adapter_price"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -37,7 +37,7 @@
                 android:textAlignment="center" />
 
             <TextView
-                android:id="@+id/adapter_quantity"
+                android:id="@+id/sell_adapter_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:gravity="center"

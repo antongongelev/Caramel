@@ -1,5 +1,6 @@
 package com.example.caramel;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,6 +8,8 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Position implements Serializable, Parcelable {
 
@@ -14,6 +17,7 @@ public class Position implements Serializable, Parcelable {
     private String name;
     private double price;
     private int quantity;
+    private String soldTime;
     private Bitmap image;
 
     public Position(String id, String name, double price, int quantity, Bitmap image) {
@@ -37,6 +41,7 @@ public class Position implements Serializable, Parcelable {
         name = in.readString();
         price = in.readDouble();
         quantity = in.readInt();
+        soldTime = in.readString();
         image = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
@@ -72,6 +77,10 @@ public class Position implements Serializable, Parcelable {
         this.image = image;
     }
 
+    public void setSoldTime(String time) {
+        this.soldTime = time;
+    }
+
     public String getId() {
         return this.id;
     }
@@ -92,6 +101,10 @@ public class Position implements Serializable, Parcelable {
         return this.image;
     }
 
+    public String getSoldTime() {
+        return this.soldTime;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
@@ -99,6 +112,12 @@ public class Position implements Serializable, Parcelable {
                 this.name.equals(((Position) obj).getName()) &&
                 this.quantity == ((Position) obj).getQuantity() &&
                 this.price == ((Position) obj).getPrice();
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String getTime() {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM HH:mm");
+        return format.format(new Date());
     }
 
     @Override
@@ -112,6 +131,7 @@ public class Position implements Serializable, Parcelable {
         dest.writeString(name);
         dest.writeDouble(price);
         dest.writeInt(quantity);
+        dest.writeString(soldTime);
         dest.writeParcelable(image, flags);
     }
 }
