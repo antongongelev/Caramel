@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -24,11 +23,15 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.example.caramel.Position.savePositions;
+import static com.example.caramel.DataService.loadImageFromStorage;
+import static com.example.caramel.DataService.loadPositions;
+import static com.example.caramel.DataService.savePositions;
+import static com.example.caramel.DataService.saveToInternalStorage;
 
 public class PositionActivity extends AppCompatActivity implements View.OnClickListener, StateManager {
 
     SharedPreferences sharedPreferences;
+    String imageName;
     TextView tvTitle;
     Button button;
     ImageButton cameraBtn;
@@ -49,6 +52,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         loadData();
 
         currentPosition = (Position) getIntent().getSerializableExtra("currentPosition");
+        imageName = currentPosition == null ? null : currentPosition.getImageName();
         isUpdateMode = currentPosition != null;
 
         //camera permission
@@ -68,7 +72,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         //data setting
         tvTitle.setText(isUpdateMode ? "Информация о товаре" : "Новый товар");
         button.setText(isUpdateMode ? "Принять" : "Добавить");
-        positionImg.setImageBitmap(isUpdateMode ? currentPosition.getImage() : null);
+        positionImg.setImageBitmap(isUpdateMode ? loadImageFromStorage(currentPosition.getImageName(), this) : null);
         name.setText(isUpdateMode ? currentPosition.getName() : "");
         price.setText(isUpdateMode ? String.valueOf(currentPosition.getPrice()) : "");
         quantity.setText(isUpdateMode ? String.valueOf(currentPosition.getQuantity()) : "");
@@ -92,8 +96,8 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void loadData() {
         sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
-        String revenue = sharedPreferences.getString("revenue", "");
-        positions = Position.loadPositions(sharedPreferences);
+        String revenue = sharedPreferences.getString("revenue", "0");
+        positions = loadPositions(sharedPreferences);
         this.revenue = Double.parseDouble(revenue);
     }
 
@@ -123,8 +127,10 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 100) {
             try {
-                Bitmap captureImage = (Bitmap) data.getExtras().get("data");
-                positionImg.setImageBitmap(captureImage);
+                Bitmap capturedImage = (Bitmap) data.getExtras().get("data");
+                positionImg.setImageBitmap(capturedImage);
+                //save image to storage
+                imageName = saveToInternalStorage(capturedImage, getApplicationContext());
                 wasUpdated = true;
             } catch (NullPointerException e) {
                 e.printStackTrace();
@@ -138,9 +144,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             String name = this.name.getText().toString();
             double price = Double.parseDouble(this.price.getText().toString());
             int quantity = Integer.parseInt(this.quantity.getText().toString());
-            //mb need to invalidate ImageView first
-            Bitmap positionImg = ((BitmapDrawable) this.positionImg.getDrawable()).getBitmap();
-            Position position = new Position(id, name, price, quantity, positionImg);
+            Position position = new Position(id, name, price, quantity, imageName);
 
             if (isUpdateMode && !position.equals(currentPosition)) {
                 wasUpdated = true;

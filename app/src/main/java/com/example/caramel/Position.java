@@ -1,20 +1,13 @@
 package com.example.caramel;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Position implements Serializable, Parcelable {
@@ -24,14 +17,14 @@ public class Position implements Serializable, Parcelable {
     private double price;
     private int quantity;
     private String soldTime;
-    private Bitmap image;
+    private String imageName;
 
-    public Position(String id, String name, double price, int quantity, Bitmap image) {
+    public Position(String id, String name, double price, int quantity, String imageName) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.image = image;
+        this.imageName = imageName;
     }
 
     public Position(String id, String name, double price, int quantity) {
@@ -48,7 +41,22 @@ public class Position implements Serializable, Parcelable {
         price = in.readDouble();
         quantity = in.readInt();
         soldTime = in.readString();
-        image = in.readParcelable(Bitmap.class.getClassLoader());
+        imageName = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeDouble(price);
+        dest.writeInt(quantity);
+        dest.writeString(soldTime);
+        dest.writeString(imageName);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Position> CREATOR = new Creator<Position>() {
@@ -79,8 +87,8 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
     }
 
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public void setSoldTime(String time) {
@@ -103,8 +111,8 @@ public class Position implements Serializable, Parcelable {
         return this.quantity;
     }
 
-    public Bitmap getImage() {
-        return this.image;
+    public String getImageName() {
+        return this.imageName;
     }
 
     public String getSoldTime() {
@@ -126,34 +134,57 @@ public class Position implements Serializable, Parcelable {
         return format.format(new Date());
     }
 
-    //Parse arrayList to json
-    public static void savePositions(SharedPreferences.Editor editor, ArrayList<Position> positions) {
-        Gson gson = new Gson();
-        String positionsGson = gson.toJson(positions);
-        editor.putString("positions", positionsGson);
-    }
+    //AND FIX THAT
+//    public static String setImage(Bitmap image) {
+//        if (image != null) {
+//            FileOutputStream outputStream = null;
+//            File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Caramel");
+//            dir.mkdir();
+//            String fileName = System.currentTimeMillis() + ".jpg";
+//            File file = new File(dir, fileName);
+//            try {
+//                outputStream = new FileOutputStream(file);
+//                image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+//                outputStream.flush();
+//                outputStream.close();
+//                return fileName;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    if (outputStream != null) {
+//                        outputStream.close();
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
-    //Parse json to arrayList
-    public static ArrayList<Position> loadPositions(SharedPreferences sharedPreferences) {
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("positions", null);
-        Type type = new TypeToken<ArrayList<Position>>() {
-        }.getType();
-        return gson.fromJson(json, type) == null ? new ArrayList<Position>() : (ArrayList<Position>) gson.fromJson(json, type);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(name);
-        dest.writeDouble(price);
-        dest.writeInt(quantity);
-        dest.writeString(soldTime);
-        dest.writeParcelable(image, flags);
-    }
+    //FIX THAT SHIT
+//    public Bitmap getImage() {
+//        if (this.imageName != null) {
+//            FileInputStream inputStream = null;
+//            try {
+//                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Caramel");
+//                dir.mkdir();
+//                File file = new File(dir, this.imageName);
+//                inputStream = new FileInputStream(file);
+//                return BitmapFactory.decodeStream(inputStream);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    if (inputStream != null) {
+//                        inputStream.close();
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 }

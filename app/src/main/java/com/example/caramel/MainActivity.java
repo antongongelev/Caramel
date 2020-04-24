@@ -20,7 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.example.caramel.Position.savePositions;
+import static com.example.caramel.DataService.loadPositions;
+import static com.example.caramel.DataService.savePositions;
 import static java.lang.Math.round;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable, StateManager {
@@ -105,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void loadData() {
         sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
-        String revenue = sharedPreferences.getString("revenue", "");
-        positions = Position.loadPositions(sharedPreferences);
+        String revenue = sharedPreferences.getString("revenue", "0");
+        positions = loadPositions(sharedPreferences);
         this.revenue = Double.parseDouble(revenue);
     }
 
