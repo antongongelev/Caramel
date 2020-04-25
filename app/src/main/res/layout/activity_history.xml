@@ -11,28 +11,27 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout_history"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_height="70dp"
         android:background="#ECAAF7">
 
         <Button
             android:id="@+id/sells_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="93dp"
+            android:layout_height="70dp"
             android:background="#00FFFFFF"
             android:backgroundTint="#FFFFFF"
             android:text="Продажи"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.773"
+            app:layout_constraintHorizontal_bias="0.808"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView_history"
-            android:layout_width="99dp"
-            android:layout_height="46dp"
+            android:layout_width="91dp"
+            android:layout_height="50dp"
             android:autoSizeTextType="none"
             android:text="Выручка, руб:"
             android:textAlignment="center"
@@ -46,18 +45,33 @@
 
         <TextView
             android:id="@+id/revenue_history"
-            android:layout_width="151dp"
-            android:layout_height="44dp"
+            android:layout_width="125dp"
+            android:layout_height="35dp"
             android:ems="10"
             android:text="Revenue"
             android:textAlignment="center"
             android:textColor="#452976"
-            android:textSize="30sp"
+            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.38"
+            app:layout_constraintHorizontal_bias="0.387"
             app:layout_constraintStart_toStartOf="@+id/textView_history"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.514" />
+
+        <ImageButton
+            android:id="@+id/reset_btn"
+            android:layout_width="47dp"
+            android:layout_height="48dp"
+            android:background="#00FFFFFF"
+            android:tint="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.987"
+            app:layout_constraintStart_toStartOf="@+id/textView_history"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.545"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

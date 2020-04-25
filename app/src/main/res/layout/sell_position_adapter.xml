@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/sell_adapter_name"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_weight="50"
         android:gravity="center"
         android:text="Название позиции"
@@ -17,21 +17,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_weight="50"
         android:orientation="horizontal"
         android:weightSum="100">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:layout_weight="30"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/sell_adapter_price"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="35dp"
                 android:gravity="center"
                 android:text="цена"
                 android:textAlignment="center" />
@@ -39,7 +39,7 @@
             <TextView
                 android:id="@+id/sell_adapter_quantity"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="35dp"
                 android:gravity="center"
                 android:text="кол-во"
                 android:textAlignment="center" />
@@ -49,10 +49,11 @@
         <Button
             android:id="@+id/sell_button"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:layout_weight="70"
             android:backgroundTint="#FCB2AD"
-            android:text="Продать" />
+            android:text="Продать"
+            android:textSize="10sp" />
 
     </LinearLayout>
 </LinearLayout>

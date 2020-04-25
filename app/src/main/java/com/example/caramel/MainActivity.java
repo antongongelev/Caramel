@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.history_button:
                 Intent toHistoryMenuIntent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(toHistoryMenuIntent);
+                break;
             default:
                 break;
         }

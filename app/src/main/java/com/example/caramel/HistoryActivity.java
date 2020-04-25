@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,13 +26,14 @@ import static java.lang.Math.round;
 public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, StateManager {
 
     SharedPreferences sharedPreferences;
-    double revenue;
+    ImageButton resetBtn;
     ArrayList<Position> soldPositions = new ArrayList<>();
     ArrayList<Position> positions = new ArrayList<>();
     Button sellsBtn;
     ListView listView;
     TextView revenueText;
     HistoryAdapter adapter;
+    double revenue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,9 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
 
         sellsBtn = findViewById(R.id.sells_button);
         sellsBtn.setOnClickListener(this);
+
+        resetBtn = findViewById(R.id.reset_btn);
+        resetBtn.setOnClickListener(this);
 
         adapter = new HistoryAdapter(this, R.layout.history_position_adapter, soldPositions);
         listView = findViewById(R.id.sold_position_list);
@@ -82,6 +87,10 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.sells_button:
                 Intent toSellsIntent = new Intent(HistoryActivity.this, MainActivity.class);
                 startActivity(toSellsIntent);
+                break;
+            case R.id.reset_btn:
+                // TODO: 25.04.2020 RESET ALL DATA
+                break;
             default:
                 break;
         }

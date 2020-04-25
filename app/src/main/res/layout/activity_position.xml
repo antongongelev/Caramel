@@ -10,20 +10,21 @@
 
     <EditText
         android:id="@+id/name"
-        android:layout_width="257dp"
-        android:layout_height="51dp"
+        android:layout_width="210dp"
+        android:layout_height="66dp"
         android:layout_weight="4"
+        android:textColorHint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.694"
+        app:layout_constraintHorizontal_bias="0.693"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.65" />
+        app:layout_constraintVertical_bias="0.66" />
 
     <TextView
         android:id="@+id/name_tv"
-        android:layout_width="107dp"
-        android:layout_height="51dp"
+        android:layout_width="104dp"
+        android:layout_height="29dp"
         android:text="Название:"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -32,39 +33,39 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.67" />
+        app:layout_constraintVertical_bias="0.657" />
 
     <EditText
         android:id="@+id/quantity"
-        android:layout_width="260dp"
-        android:layout_height="52dp"
+        android:layout_width="206dp"
+        android:layout_height="60dp"
         android:layout_weight="4"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.708"
+        app:layout_constraintHorizontal_bias="0.675"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.747" />
+        app:layout_constraintVertical_bias="0.756" />
 
     <TextView
         android:id="@+id/quantity_tv"
-        android:layout_width="107dp"
-        android:layout_height="51dp"
+        android:layout_width="89dp"
+        android:layout_height="32dp"
         android:text="Кол-во:"
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.062"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.774" />
+        app:layout_constraintVertical_bias="0.745" />
 
     <Button
         android:id="@+id/add_or_update_position_btn"
-        android:layout_width="412dp"
-        android:layout_height="61dp"
+        android:layout_width="359dp"
+        android:layout_height="55dp"
         android:layout_weight="1"
         android:backgroundTint="#D4F9AA"
         android:text="Действие"
@@ -77,46 +78,46 @@
 
     <EditText
         android:id="@+id/price"
-        android:layout_width="259dp"
-        android:layout_height="57dp"
+        android:layout_width="209dp"
+        android:layout_height="62dp"
         android:layout_weight="4"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.71"
+        app:layout_constraintHorizontal_bias="0.688"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.857" />
+        app:layout_constraintVertical_bias="0.851" />
 
     <TextView
         android:id="@+id/price_tv"
-        android:layout_width="107dp"
-        android:layout_height="51dp"
+        android:layout_width="75dp"
+        android:layout_height="25dp"
         android:text="Цена:"
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.108"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.879" />
+        app:layout_constraintVertical_bias="0.827" />
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="392dp"
-        android:layout_height="50dp"
+        android:layout_width="300dp"
+        android:layout_height="46dp"
         android:text="Заголовок"
         android:textAlignment="center"
         android:textIsSelectable="false"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.089" />
+        app:layout_constraintVertical_bias="0.095" />
 
     <ImageView
         android:id="@+id/position_img"
@@ -125,10 +126,9 @@
         android:src="?android:attr/autofilledHighlight"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.261" />
+        app:layout_constraintVertical_bias="0.255" />
 
     <ImageButton
         android:id="@+id/camera_btn"
@@ -138,9 +138,9 @@
         android:src="@android:drawable/ic_menu_camera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.836"
+        app:layout_constraintHorizontal_bias="0.871"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.191" />
+        app:layout_constraintVertical_bias="0.176" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
