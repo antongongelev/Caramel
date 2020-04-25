@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.example.caramel.Constants.CARAMEL_DATA;
+import static com.example.caramel.Constants.CURRENT_POSITION;
+import static com.example.caramel.Constants.POSITIONS;
+import static com.example.caramel.Constants.REVENUE;
+import static com.example.caramel.Constants.SOLD_POSITIONS;
 import static com.example.caramel.DataService.loadPositions;
 import static com.example.caramel.DataService.savePositions;
 import static java.lang.Math.round;
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, PositionActivity.class);
-                intent.putExtra("currentPosition", (Serializable) adapter.getItem(position));
+                intent.putExtra(CURRENT_POSITION, (Serializable) adapter.getItem(position));
                 startActivity(intent);
             }
         });
@@ -94,22 +99,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void saveData() {
-        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        savePositions(editor, positions);
-        editor.putString("revenue", String.valueOf(revenue));
+        savePositions(editor, positions, POSITIONS);
+        savePositions(editor, soldPositions, SOLD_POSITIONS);
+        editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
     }
 
     @Override
     public void loadData() {
-        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
-        String revenue = sharedPreferences.getString("revenue", "0");
-        positions = loadPositions(sharedPreferences);
-        this.revenue = Double.parseDouble(revenue);
+        sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
+        revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
+        positions = loadPositions(sharedPreferences, POSITIONS);
+        soldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
     }
+
+    @Override
+    public void onBackPressed() {
+    }
+
 
     //population positions with test data
     private void populatePositionsWithTestData() {
@@ -125,14 +136,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.add_btn:
                 Intent toPositionMenuIntent = new Intent(MainActivity.this, PositionActivity.class);
-                toPositionMenuIntent.putExtra("positions", positions);
-                toPositionMenuIntent.putExtra("revenue", revenue);
                 startActivity(toPositionMenuIntent);
                 break;
             case R.id.history_button:
                 Intent toHistoryMenuIntent = new Intent(MainActivity.this, HistoryActivity.class);
-                toHistoryMenuIntent.putExtra("soldPositions", soldPositions);
-                toHistoryMenuIntent.putExtra("revenue", revenue);
                 startActivity(toHistoryMenuIntent);
             default:
                 break;
@@ -148,8 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (quantityBeforeSelling > 0) {
 
                 revenue += positionToSell.getPrice();
-                long roundedRevenue = round(revenue);
-                revenueText.setText(String.valueOf(roundedRevenue));
+                revenueText.setText(String.valueOf(round(revenue)));
                 positionToSell.setQuantity(quantityBeforeSelling - 1);
 
                 //add to history

@@ -23,6 +23,10 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.example.caramel.Constants.CARAMEL_DATA;
+import static com.example.caramel.Constants.CURRENT_POSITION;
+import static com.example.caramel.Constants.POSITIONS;
+import static com.example.caramel.Constants.REVENUE;
 import static com.example.caramel.DataService.loadImageFromStorage;
 import static com.example.caramel.DataService.loadPositions;
 import static com.example.caramel.DataService.savePositions;
@@ -51,7 +55,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_position);
         loadData();
 
-        currentPosition = (Position) getIntent().getSerializableExtra("currentPosition");
+        currentPosition = (Position) getIntent().getSerializableExtra(CURRENT_POSITION);
         imageName = currentPosition == null ? null : currentPosition.getImageName();
         isUpdateMode = currentPosition != null;
 
@@ -84,21 +88,20 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void saveData() {
-        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        savePositions(editor, positions);
-        editor.putString("revenue", String.valueOf(revenue));
+        savePositions(editor, positions, POSITIONS);
+        editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
     }
 
     @Override
     public void loadData() {
-        sharedPreferences = getSharedPreferences("Caramel_data", MODE_PRIVATE);
-        String revenue = sharedPreferences.getString("revenue", "0");
-        positions = loadPositions(sharedPreferences);
-        this.revenue = Double.parseDouble(revenue);
+        sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
+        revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
+        positions = loadPositions(sharedPreferences, POSITIONS);
     }
 
     @Override
@@ -175,6 +178,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
     }
 
+    // TODO: 25.04.2020 update position names in history
     private void updatePosition(Position position) {
         for (int i = 0; i < positions.size(); i++) {
             if (positions.get(i).getId().equals(position.getId())) {

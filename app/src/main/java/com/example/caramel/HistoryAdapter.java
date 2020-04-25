@@ -20,13 +20,13 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
 
     private Context context;
     private int resource;
-    private Removable removable;
+    private Refundable refundable;
 
     public HistoryAdapter(@NonNull Context context, int resource, @NonNull List<Position> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
-        this.removable = (Removable) context;
+        this.refundable = (Refundable) context;
     }
 
     @SuppressLint("ViewHolder")
@@ -49,7 +49,7 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removable.removePosition(position);
+                refundable.refund(position);
             }
         });
 

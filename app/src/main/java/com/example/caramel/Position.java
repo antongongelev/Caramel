@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Position implements Serializable, Parcelable {
 
@@ -131,60 +132,7 @@ public class Position implements Serializable, Parcelable {
     @SuppressLint("SimpleDateFormat")
     public static String getTime() {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM HH:mm");
-        return format.format(new Date());
+        Date now = new Date();
+        return format.format(now);
     }
-
-    //AND FIX THAT
-//    public static String setImage(Bitmap image) {
-//        if (image != null) {
-//            FileOutputStream outputStream = null;
-//            File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Caramel");
-//            dir.mkdir();
-//            String fileName = System.currentTimeMillis() + ".jpg";
-//            File file = new File(dir, fileName);
-//            try {
-//                outputStream = new FileOutputStream(file);
-//                image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//                outputStream.flush();
-//                outputStream.close();
-//                return fileName;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//                try {
-//                    if (outputStream != null) {
-//                        outputStream.close();
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
-    //FIX THAT SHIT
-//    public Bitmap getImage() {
-//        if (this.imageName != null) {
-//            FileInputStream inputStream = null;
-//            try {
-//                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Caramel");
-//                dir.mkdir();
-//                File file = new File(dir, this.imageName);
-//                inputStream = new FileInputStream(file);
-//                return BitmapFactory.decodeStream(inputStream);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } finally {
-//                try {
-//                    if (inputStream != null) {
-//                        inputStream.close();
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return null;
-//    }
 }

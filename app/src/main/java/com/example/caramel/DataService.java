@@ -17,20 +17,32 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import static com.example.caramel.Constants.POSITIONS;
+import static com.example.caramel.Constants.SOLD_POSITIONS;
+
 public class DataService {
 
     //Parse arrayList to json
-    public static void savePositions(SharedPreferences.Editor editor, ArrayList<Position> positions) {
+    public static void savePositions(SharedPreferences.Editor editor, ArrayList<Position> positions, String type) {
         Gson gson = new Gson();
         String positionsGson = gson.toJson(positions);
-        //losing imageName
-        editor.putString("positions", positionsGson);
+        if (type.equals(POSITIONS)) {
+            editor.putString(POSITIONS, positionsGson);
+        } else if (type.equals(SOLD_POSITIONS)) {
+            editor.putString(SOLD_POSITIONS, positionsGson);
+
+        }
     }
 
     //Parse json to arrayList
-    public static ArrayList<Position> loadPositions(SharedPreferences sharedPreferences) {
+    public static ArrayList<Position> loadPositions(SharedPreferences sharedPreferences, String positionsType) {
         Gson gson = new Gson();
-        String json = sharedPreferences.getString("positions", null);
+        String json = null;
+        if (positionsType.equals(POSITIONS)) {
+            json = sharedPreferences.getString(POSITIONS, null);
+        } else if (positionsType.equals(SOLD_POSITIONS)) {
+            json = sharedPreferences.getString(SOLD_POSITIONS, null);
+        }
         Type type = new TypeToken<ArrayList<Position>>() {
         }.getType();
         Object positions = gson.fromJson(json, type);
