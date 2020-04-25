@@ -27,6 +27,7 @@ import static com.example.caramel.Constants.CARAMEL_DATA;
 import static com.example.caramel.Constants.CURRENT_POSITION;
 import static com.example.caramel.Constants.POSITIONS;
 import static com.example.caramel.Constants.REVENUE;
+import static com.example.caramel.Constants.SOLD_POSITIONS;
 import static com.example.caramel.DataService.loadImageFromStorage;
 import static com.example.caramel.DataService.loadPositions;
 import static com.example.caramel.DataService.savePositions;
@@ -44,6 +45,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     EditText price;
     EditText quantity;
     ArrayList<Position> positions;
+    static ArrayList<Position> soldPositions = new ArrayList<>();
     Position currentPosition;
     double revenue;
     boolean isUpdateMode;
@@ -92,6 +94,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         savePositions(editor, positions, POSITIONS);
+        savePositions(editor, soldPositions, SOLD_POSITIONS);
         editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
@@ -102,6 +105,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
         positions = loadPositions(sharedPreferences, POSITIONS);
+        soldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
     }
 
     @Override
@@ -156,9 +160,9 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             validateFields(position);
             validateName(position);
 
-            if (isUpdateMode) {
+            if (isUpdateMode && wasUpdated) {
                 updatePosition(position);
-            } else {
+            } else if (!isUpdateMode) {
                 addPosition(position);
             }
             saveData();
@@ -182,10 +186,17 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     private void updatePosition(Position position) {
         for (int i = 0; i < positions.size(); i++) {
             if (positions.get(i).getId().equals(position.getId())) {
+                String oldName = positions.get(i).getName();
                 positions.set(i, position);
-                if (wasUpdated) {
-                    Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
+                //bypassing sold positions list to update position name
+                if (!oldName.equals(position.getName())) {
+                    for (int j = 0; j < soldPositions.size(); j++) {
+                        if (soldPositions.get(j).getId().equals(position.getId())) {
+                            soldPositions.get(j).setName(position.getName());
+                        }
+                    }
                 }
+                Toast.makeText(this, String.format("Товар \'%s\' был успешно изменен", position.getName()), Toast.LENGTH_LONG).show();
                 break;
             }
         }
