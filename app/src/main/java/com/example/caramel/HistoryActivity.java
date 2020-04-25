@@ -22,7 +22,6 @@ import static com.example.caramel.DataService.savePositions;
 import static java.lang.Math.round;
 
 
-//todo: change position Name if position was updated
 public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, StateManager {
 
     SharedPreferences sharedPreferences;
@@ -114,7 +113,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                 Toast.makeText(this, "Продажа отменена", Toast.LENGTH_LONG).show();
                 saveData();
             } else {
-                Toast.makeText(this, "Невозможно отменить продажу для данного товара", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Невозможно отменить продажу данного товара", Toast.LENGTH_LONG).show();
             }
         }
     }

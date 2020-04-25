@@ -182,7 +182,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         Toast.makeText(this, String.format("Товар \'%s\' был успешно добавлен", position.getName()), Toast.LENGTH_LONG).show();
     }
 
-    // TODO: 25.04.2020 update position names in history
     private void updatePosition(Position position) {
         for (int i = 0; i < positions.size(); i++) {
             if (positions.get(i).getId().equals(position.getId())) {

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFE0DE"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -12,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="12dp"
+        android:background="#FBADAD">
 
         <ImageButton
             android:id="@+id/add_btn"
@@ -22,7 +24,7 @@
             android:background="#00FFFFFF"
             android:backgroundTint="#00FFFFFF"
             android:scaleType="center"
-            android:tint="#00BCD4"
+            android:tint="#591E19"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.954"
@@ -67,7 +69,7 @@
             android:ems="10"
             android:text="Revenue"
             android:textAlignment="center"
-            android:textColor="#468832"
+            android:textColor="#581713"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

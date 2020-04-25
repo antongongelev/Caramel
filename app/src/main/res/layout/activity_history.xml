@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F4D8F9"
     android:orientation="vertical"
     tools:context=".HistoryActivity">
 
@@ -12,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="12dp"
+        android:background="#ECAAF7">
 
         <Button
             android:id="@+id/sells_button"
@@ -49,7 +51,7 @@
             android:ems="10"
             android:text="Revenue"
             android:textAlignment="center"
-            android:textColor="#468832"
+            android:textColor="#452976"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
