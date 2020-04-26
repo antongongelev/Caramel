@@ -16,9 +16,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.zxing.Result;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static com.example.caramel.Constants.CARAMEL_DATA;
 import static com.example.caramel.Constants.CURRENT_POSITION;
@@ -32,7 +36,9 @@ import static java.lang.Math.round;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable, StateManager {
 
     SharedPreferences sharedPreferences;
+    private ZXingScannerView scannerView;
     private ImageButton addPositionBtn;
+    private ImageButton scannerBtn;
     private Button historyBtn;
     private ListView listView;
     static ArrayList<Position> positions = new ArrayList<>();
@@ -56,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         addPositionBtn = findViewById(R.id.add_btn);
         historyBtn = findViewById(R.id.history_button);
+        scannerBtn = findViewById(R.id.scanner_btn);
+
+        scannerBtn.setOnClickListener(this);
         addPositionBtn.setOnClickListener(this);
         historyBtn.setOnClickListener(this);
 
@@ -121,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
+        Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
+        startActivity(toSellsIntent);
     }
 
 
@@ -144,10 +155,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent toHistoryMenuIntent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(toHistoryMenuIntent);
                 break;
+            case R.id.scanner_btn:
+                scanCode();
+                break;
             default:
                 break;
         }
     }
+
+    //scanner
+    private void scanCode() {
+        scannerView = new ZXingScannerView(this);
+        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
+            @Override
+            public void handleResult(Result result) {
+                String resultCode = result.getText();
+                Toast.makeText(MainActivity.this, resultCode, Toast.LENGTH_SHORT).show();
+                Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(toSellsIntent);
+                scannerView.stopCamera();
+            }
+        });
+        setContentView(scannerView);
+        scannerView.startCamera();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            scannerView.stopCamera();
+        } catch (NullPointerException e) {
+
+        }
+    }
+
 
     @Override
     public void sellPosition(int position) {
