@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         historyBtn = findViewById(R.id.history_button);
         scannerBtn = findViewById(R.id.scanner_btn);
 
-        scannerBtn.setOnClickListener(this);
         addPositionBtn.setOnClickListener(this);
         historyBtn.setOnClickListener(this);
+        scannerBtn.setOnClickListener(this);
 
         adapter = new PositionAdapter(this, R.layout.sell_position_adapter, positions);
         listView = findViewById(R.id.position_list);
