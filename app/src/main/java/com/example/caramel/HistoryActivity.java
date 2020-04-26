@@ -1,5 +1,6 @@
 package com.example.caramel;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -89,11 +91,31 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(toSellsIntent);
                 break;
             case R.id.reset_btn:
-                // TODO: 25.04.2020 RESET ALL DATA
+                resetHistoryAndRevenue();
                 break;
             default:
                 break;
         }
+    }
+
+    //reset Data
+    private void resetHistoryAndRevenue() {
+        new AlertDialog.Builder(HistoryActivity.this)
+                .setIcon(android.R.drawable.ic_delete)
+                .setTitle("Сбросить Данные?")
+                .setMessage("История продаж и выручка будут очищены")
+                .setNegativeButton("Нет", null)
+                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        soldPositions.clear();
+                        revenue = 0;
+                        revenueText.setText(String.valueOf(round(revenue)));
+                        adapter.notifyDataSetChanged();
+                        saveData();
+                    }
+                })
+                .show();
     }
 
     private boolean refundPosition(Position positionToRefund) {
