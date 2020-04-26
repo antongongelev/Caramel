@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PositionAdapter adapter;
     private TextView revenueText;
     private double revenue;
+    private boolean inScannerMode;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -130,10 +131,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(toSellsIntent);
+        if (inScannerMode) {
+            Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(toSellsIntent);
+        }
     }
-
 
     //population positions with test data
     private void populatePositionsWithTestData() {
@@ -165,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //scanner
     private void scanCode() {
+        inScannerMode = true;
         scannerView = new ZXingScannerView(this);
         scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
             @Override
@@ -174,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
                 startActivity(toSellsIntent);
                 scannerView.stopCamera();
+                inScannerMode = false;
             }
         });
         setContentView(scannerView);
@@ -185,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onPause();
         try {
             scannerView.stopCamera();
+            inScannerMode = false;
         } catch (NullPointerException e) {
 
         }

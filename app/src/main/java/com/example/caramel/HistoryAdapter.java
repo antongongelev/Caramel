@@ -2,6 +2,7 @@ package com.example.caramel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +51,7 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                refundable.refund(position);
+                showRefundDialog(position);
             }
         });
 
@@ -58,5 +60,21 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
         tvTime.setText(String.format("дата: %s", time));
 
         return convertView;
+    }
+
+    private void showRefundDialog(final int position) {
+        String positionName = getItem(position).getName();
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_menu_revert)
+                .setTitle("Отменить продажу?")
+                .setMessage(String.format("Товар \'%s\' будет возвращен", positionName))
+                .setNegativeButton("Нет", null)
+                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        refundable.refund(position);
+                    }
+                })
+                .show();
     }
 }

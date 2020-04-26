@@ -2,6 +2,7 @@ package com.example.caramel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +52,7 @@ public class PositionAdapter extends ArrayAdapter<Position> {
         buttonSell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saleable.sellPosition(position);
+                showSellDialog(position);
             }
         });
 
@@ -59,5 +61,21 @@ public class PositionAdapter extends ArrayAdapter<Position> {
         tvQuantity.setText(String.format("%s шт", quantity));
 
         return convertView;
+    }
+
+    private void showSellDialog(final int position) {
+        String positionName = getItem(position).getName();
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_menu_mylocation)
+                .setTitle("Продать товар?")
+                .setMessage(String.format("Товар \'%s\' будет продан", positionName))
+                .setNegativeButton("Нет", null)
+                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saleable.sellPosition(position);
+                    }
+                })
+                .show();
     }
 }
