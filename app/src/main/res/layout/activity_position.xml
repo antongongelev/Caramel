@@ -123,7 +123,6 @@
         android:id="@+id/position_img"
         android:layout_width="170dp"
         android:layout_height="227dp"
-        android:src="?android:attr/autofilledHighlight"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

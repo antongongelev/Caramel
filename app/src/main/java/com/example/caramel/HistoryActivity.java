@@ -113,6 +113,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                         revenueText.setText(String.valueOf(round(revenue)));
                         adapter.notifyDataSetChanged();
                         saveData();
+                        Toast.makeText(HistoryActivity.this, "Данные о продажах и выручке сброшены", Toast.LENGTH_LONG).show();
                     }
                 })
                 .show();

@@ -84,8 +84,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                String positionName = adapter.getItem(position).getName();
                                 positions.remove(position);
                                 adapter.notifyDataSetChanged();
+                                Toast.makeText(MainActivity.this, String.format("Товар \'%s\' успешно удален", positionName), Toast.LENGTH_LONG).show();
                                 saveData();
                             }
                         })
