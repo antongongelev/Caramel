@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_SHORT).show();
+                Position position = findPositionByBarcode(result.getContents());
+                sellPosition(position);
             } else {
                 Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT).show();
             }
@@ -191,10 +192,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void sellPosition(int position) {
-        Position positionToSell = adapter.getItem(position);
+    private Position findPositionByBarcode(String barcode) {
+        for (int i = 0; i < positions.size(); i++) {
+            if (barcode.equals(positions.get(i).getBarcode())) {
+                return positions.get(i);
+            }
+        }
+        return null;
+    }
 
+    @Override
+    public void sellPosition(Position positionToSell) {
         if (positionToSell != null) {
             int quantityBeforeSelling = positionToSell.getQuantity();
             if (quantityBeforeSelling > 0) {
@@ -214,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 Toast.makeText(this, String.format("Нет в наличии: %s", positionToSell.getName()), Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "Ошибка: товар не найден", Toast.LENGTH_SHORT).show();
         }
     }
 }

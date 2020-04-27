@@ -64,16 +64,16 @@ public class PositionAdapter extends ArrayAdapter<Position> {
     }
 
     private void showSellDialog(final int position) {
-        String positionName = getItem(position).getName();
+        final Position positionToSell = getItem(position);
         new AlertDialog.Builder(context)
                 .setIcon(android.R.drawable.ic_menu_mylocation)
                 .setTitle("Продать товар?")
-                .setMessage(String.format("Товар \'%s\' будет продан", positionName))
+                .setMessage(String.format("Товар \'%s\' будет продан", positionToSell.getName()))
                 .setNegativeButton("Нет", null)
                 .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        saleable.sellPosition(position);
+                        saleable.sellPosition(positionToSell);
                     }
                 })
                 .show();

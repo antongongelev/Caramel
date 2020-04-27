@@ -174,7 +174,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (result != null) {
                 if (result.getContents() != null) {
-                    // TODO: 27.04.2020 SET BARCODE
                     barcode = result.getContents();
                     barcodeTv.setText(result.getContents());
                     wasUpdated = true;
