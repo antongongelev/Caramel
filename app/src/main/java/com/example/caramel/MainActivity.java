@@ -36,7 +36,6 @@ import static java.lang.Math.round;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable, StateManager {
 
     SharedPreferences sharedPreferences;
-    //private ZXingScannerView scannerView;
     private ImageButton addPositionBtn;
     private ImageButton scannerBtn;
     private Button historyBtn;
@@ -46,10 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PositionAdapter adapter;
     private TextView revenueText;
     private double revenue;
-    private boolean inScannerMode;
 
     // TODO: 26.04.2020 Add categories
-    // TODO: 27.04.2020 Add barcode to Position
     // TODO: 26.04.2020 Add Cart and maybe replace sell button to TO_CART
 
     @SuppressLint("WrongViewCast")
@@ -134,10 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        if (inScannerMode) {
-            Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(toSellsIntent);
-        }
     }
 
     //population positions with test data
