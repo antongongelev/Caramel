@@ -20,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -37,6 +40,9 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
 
     SharedPreferences sharedPreferences;
     String imageName;
+    String barcode;
+    TextView barcodeTv;
+    ImageButton codeBtn;
     TextView tvTitle;
     Button button;
     ImageButton cameraBtn;
@@ -50,6 +56,8 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     double revenue;
     boolean isUpdateMode;
     boolean wasUpdated;
+    boolean inScannerMode;
+    boolean inPhotoMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
 
         currentPosition = (Position) getIntent().getSerializableExtra(CURRENT_POSITION);
         imageName = currentPosition == null ? null : currentPosition.getImageName();
+        barcode = currentPosition == null ? "" : currentPosition.getBarcode();
         isUpdateMode = currentPosition != null;
 
         //camera permission
@@ -74,6 +83,8 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         button = findViewById(R.id.add_or_update_position_btn);
         cameraBtn = findViewById(R.id.camera_btn);
         positionImg = findViewById(R.id.position_img);
+        codeBtn = findViewById(R.id.code_btn);
+        barcodeTv = findViewById(R.id.code_tv);
 
         //data setting
         tvTitle.setText(isUpdateMode ? "Информация о товаре" : "Новый товар");
@@ -82,10 +93,12 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         name.setText(isUpdateMode ? currentPosition.getName() : "");
         price.setText(isUpdateMode ? String.valueOf(currentPosition.getPrice()) : "");
         quantity.setText(isUpdateMode ? String.valueOf(currentPosition.getQuantity()) : "");
+        barcodeTv.setText(isUpdateMode ? currentPosition.getBarcode() : "");
 
         //click listening
         button.setOnClickListener(this);
         cameraBtn.setOnClickListener(this);
+        codeBtn.setOnClickListener(this);
     }
 
     @Override
@@ -119,46 +132,77 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
                 uploadPhoto();
                 break;
             }
+            case R.id.code_btn: {
+                scanCode();
+                break;
+            }
             default:
                 break;
         }
     }
 
+    private void scanCode() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setCaptureActivity(CaptureAct.class);
+        integrator.setOrientationLocked(false);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        integrator.setPrompt("Отсканируйте штриход");
+        integrator.initiateScan();
+        inScannerMode = true;
+    }
+
     private void uploadPhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, 100);
+        inPhotoMode = true;
     }
 
-    //sometimes get error, because data == null
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == 100) {
+        if (inPhotoMode && data != null && requestCode == 100) {
             try {
                 Bitmap capturedImage = (Bitmap) data.getExtras().get("data");
                 positionImg.setImageBitmap(capturedImage);
                 //save image to storage
                 imageName = saveToInternalStorage(capturedImage, getApplicationContext());
                 wasUpdated = true;
-            } catch (NullPointerException e) {
+                inPhotoMode = false;
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (inScannerMode) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null) {
+                if (result.getContents() != null) {
+                    // TODO: 27.04.2020 SET BARCODE
+                    barcode = result.getContents();
+                    barcodeTv.setText(result.getContents());
+                    wasUpdated = true;
+                    Toast.makeText(this, result.getContents(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+            inScannerMode = false;
         }
     }
 
     private void addOrUpdatePosition() {
         try {
             String id = isUpdateMode ? currentPosition.getId() : UUID.randomUUID().toString();
-            String name = this.name.getText().toString();
+            String name = this.name.getText().toString().trim();
             double price = Double.parseDouble(this.price.getText().toString());
             int quantity = Integer.parseInt(this.quantity.getText().toString());
-            Position position = new Position(id, name, price, quantity, imageName);
+            Position position = new Position(id, name, price, quantity, imageName, barcode);
 
             if (isUpdateMode && !position.equals(currentPosition)) {
                 wasUpdated = true;
             }
 
             validateFields(position);
-            validateName(position);
+            validateNameAndBarcode(position);
 
             if (isUpdateMode && wasUpdated) {
                 updatePosition(position);
@@ -213,12 +257,18 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void validateName(Position position) {
+    private void validateNameAndBarcode(Position position) {
         if (positions != null && positions.size() > 0) {
             for (int i = 0; i < positions.size(); i++) {
                 if (positions.get(i).getName().equals(position.getName())) {
-                    if (!isUpdateMode || !positions.get(i).getName().equals(currentPosition.getName())) {
+                    if (!isUpdateMode || !positions.get(i).getId().equals(currentPosition.getId())) {
                         throw new IllegalArgumentException("Позиция с таким названием уже существует");
+                    }
+                }
+                if (position.getBarcode() != null && !position.getBarcode().isEmpty() &&
+                        position.getBarcode().equals(positions.get(i).getBarcode())) {
+                    if (!isUpdateMode || !positions.get(i).getId().equals(currentPosition.getId())) {
+                        throw new IllegalArgumentException("Позиция с таким штрихкодом уже существует");
                     }
                 }
             }

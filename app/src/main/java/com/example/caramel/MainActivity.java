@@ -13,16 +13,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.zxing.Result;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static com.example.caramel.Constants.CARAMEL_DATA;
 import static com.example.caramel.Constants.CURRENT_POSITION;
@@ -36,7 +36,7 @@ import static java.lang.Math.round;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Saleable, StateManager {
 
     SharedPreferences sharedPreferences;
-    private ZXingScannerView scannerView;
+    //private ZXingScannerView scannerView;
     private ImageButton addPositionBtn;
     private ImageButton scannerBtn;
     private Button historyBtn;
@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView revenueText;
     private double revenue;
     private boolean inScannerMode;
+
+    // TODO: 26.04.2020 Add categories
+    // TODO: 27.04.2020 Add barcode to Position
+    // TODO: 26.04.2020 Add Cart and maybe replace sell button to TO_CART
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             }
         });
-
         listView.setAdapter(adapter);
     }
 
@@ -165,36 +168,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //scanner
     private void scanCode() {
-        inScannerMode = true;
-        scannerView = new ZXingScannerView(this);
-        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
-            @Override
-            public void handleResult(Result result) {
-                String resultCode = result.getText();
-                Toast.makeText(MainActivity.this, resultCode, Toast.LENGTH_SHORT).show();
-                Intent toSellsIntent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(toSellsIntent);
-                scannerView.stopCamera();
-                inScannerMode = false;
-            }
-        });
-        setContentView(scannerView);
-        scannerView.startCamera();
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setCaptureActivity(CaptureAct.class);
+        integrator.setOrientationLocked(false);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        integrator.setPrompt("Отсканируйте штриход");
+        integrator.initiateScan();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            scannerView.stopCamera();
-            inScannerMode = false;
-        } catch (NullPointerException e) {
-
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() != null) {
+                Toast.makeText(this, result.getContents(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Штрихкод не найден", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 
     @Override
     public void sellPosition(int position) {

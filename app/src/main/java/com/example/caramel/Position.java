@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class Position implements Serializable, Parcelable {
 
@@ -19,13 +18,15 @@ public class Position implements Serializable, Parcelable {
     private int quantity;
     private String soldTime;
     private String imageName;
+    private String barcode;
 
-    public Position(String id, String name, double price, int quantity, String imageName) {
+    public Position(String id, String name, double price, int quantity, String imageName, String barcode) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.imageName = imageName;
+        this.barcode = barcode;
     }
 
     public Position(String id, String name, double price, int quantity) {
@@ -43,6 +44,7 @@ public class Position implements Serializable, Parcelable {
         quantity = in.readInt();
         soldTime = in.readString();
         imageName = in.readString();
+        barcode = in.readString();
     }
 
     @Override
@@ -53,6 +55,7 @@ public class Position implements Serializable, Parcelable {
         dest.writeInt(quantity);
         dest.writeString(soldTime);
         dest.writeString(imageName);
+        dest.writeString(barcode);
     }
 
     @Override
@@ -96,6 +99,10 @@ public class Position implements Serializable, Parcelable {
         this.soldTime = time;
     }
 
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
     public String getId() {
         return this.id;
     }
@@ -118,6 +125,10 @@ public class Position implements Serializable, Parcelable {
 
     public String getSoldTime() {
         return this.soldTime;
+    }
+
+    public String getBarcode() {
+        return this.barcode;
     }
 
     @Override

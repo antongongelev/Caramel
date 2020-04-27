@@ -11,15 +11,42 @@
     <EditText
         android:id="@+id/name"
         android:layout_width="210dp"
-        android:layout_height="66dp"
+        android:layout_height="60dp"
         android:layout_weight="4"
         android:textColorHint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.693"
+        app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.66" />
+        app:layout_constraintVertical_bias="0.707" />
+
+    <TextView
+        android:id="@+id/codeName_tv"
+        android:layout_width="104dp"
+        android:layout_height="29dp"
+        android:text="Штрихкод:"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.022"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.609" />
+
+    <TextView
+        android:id="@+id/code_tv"
+        android:layout_width="168dp"
+        android:layout_height="33dp"
+        android:text="1234567890"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.559"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.613" />
 
     <TextView
         android:id="@+id/name_tv"
@@ -30,23 +57,23 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.016"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.657" />
+        app:layout_constraintVertical_bias="0.702" />
 
     <EditText
         android:id="@+id/quantity"
-        android:layout_width="206dp"
+        android:layout_width="100dp"
         android:layout_height="60dp"
         android:layout_weight="4"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.675"
+        app:layout_constraintHorizontal_bias="0.389"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.756" />
+        app:layout_constraintVertical_bias="0.797" />
 
     <TextView
         android:id="@+id/quantity_tv"
@@ -57,10 +84,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.062"
+        app:layout_constraintHorizontal_bias="0.068"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.745" />
+        app:layout_constraintVertical_bias="0.792" />
 
     <Button
         android:id="@+id/add_or_update_position_btn"
@@ -78,16 +105,16 @@
 
     <EditText
         android:id="@+id/price"
-        android:layout_width="209dp"
-        android:layout_height="62dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_weight="4"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.688"
+        app:layout_constraintHorizontal_bias="0.389"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.851" />
+        app:layout_constraintVertical_bias="0.886" />
 
     <TextView
         android:id="@+id/price_tv"
@@ -98,10 +125,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_or_update_position_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintHorizontal_bias="0.107"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.827" />
+        app:layout_constraintVertical_bias="0.878" />
 
     <TextView
         android:id="@+id/title"
@@ -134,12 +161,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#00FFFFFF"
-        android:src="@android:drawable/ic_menu_camera"
+        android:src="@drawable/ic_camera_alt_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.871"
+        app:layout_constraintHorizontal_bias="0.853"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.176" />
+        app:layout_constraintVertical_bias="0.187" />
+
+    <ImageButton
+        android:id="@+id/code_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        android:src="@drawable/ic_select_all_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.853"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
