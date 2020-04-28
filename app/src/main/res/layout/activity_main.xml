@@ -92,7 +92,7 @@
         android:id="@+id/linearLayout3"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:background="#FFADAD">
+        android:background="#FBADAD">
 
 
         <ImageButton

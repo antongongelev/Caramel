@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_weight="70"
-            android:backgroundTint="#FCB2AD"
+            android:backgroundTint="#FFCAC7"
             android:text="Продать"
             android:textSize="10sp" />
 
