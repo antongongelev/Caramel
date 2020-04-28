@@ -7,11 +7,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,13 +38,14 @@ import static com.example.caramel.DataService.loadPositions;
 import static com.example.caramel.DataService.savePositions;
 import static com.example.caramel.DataService.saveToInternalStorage;
 
-public class PositionActivity extends AppCompatActivity implements View.OnClickListener, StateManager {
+public class PositionActivity extends AppCompatActivity implements View.OnClickListener, StateManager, PopupMenu.OnMenuItemClickListener {
 
     SharedPreferences sharedPreferences;
     String imageName;
     String barcode;
     TextView barcodeTv;
     ImageButton codeBtn;
+    Button categoryBtn;
     TextView tvTitle;
     Button button;
     ImageButton cameraBtn;
@@ -58,6 +61,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     boolean wasUpdated;
     boolean inScannerMode;
     boolean inPhotoMode;
+    int categoryId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         currentPosition = (Position) getIntent().getSerializableExtra(CURRENT_POSITION);
         imageName = currentPosition == null ? null : currentPosition.getImageName();
         barcode = currentPosition == null ? "" : currentPosition.getBarcode();
+        categoryId = currentPosition == null ? Category.EMPTY.getId() : currentPosition.getCategoryId();
         isUpdateMode = currentPosition != null;
 
         //camera permission
@@ -85,6 +90,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         positionImg = findViewById(R.id.position_img);
         codeBtn = findViewById(R.id.code_btn);
         barcodeTv = findViewById(R.id.code_tv);
+        categoryBtn = findViewById(R.id.category_btn_position);
 
         //data setting
         tvTitle.setText(isUpdateMode ? "Информация о товаре" : "Новый товар");
@@ -94,11 +100,13 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         price.setText(isUpdateMode ? String.valueOf(currentPosition.getPrice()) : "");
         quantity.setText(isUpdateMode ? String.valueOf(currentPosition.getQuantity()) : "");
         barcodeTv.setText(isUpdateMode ? currentPosition.getBarcode() : "");
+        categoryBtn.setText(Category.getCategoryById(categoryId).getName());
 
         //click listening
         button.setOnClickListener(this);
         cameraBtn.setOnClickListener(this);
         codeBtn.setOnClickListener(this);
+        categoryBtn.setOnClickListener(this);
     }
 
     @Override
@@ -136,9 +144,35 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
                 scanCode();
                 break;
             }
+            case R.id.category_btn_position: {
+                changeCategory(v);
+            }
             default:
                 break;
         }
+    }
+
+    private void changeCategory(View v) {
+        PopupMenu menu = new PopupMenu(this, v);
+        menu.setOnMenuItemClickListener(this);
+        menu.inflate(R.menu.category_position_menu);
+        menu.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        categoryBtn.setText(item.getTitle());
+        switch (item.getItemId()) {
+            case R.id.category_position_empty: {
+                this.categoryId = Category.EMPTY.getId();
+                break;
+            }
+            case R.id.category_position_korea: {
+                this.categoryId = Category.KOREA.getId();
+                break;
+            }
+        }
+        return true;
     }
 
     private void scanCode() {
@@ -194,7 +228,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             String name = this.name.getText().toString().trim();
             double price = Double.parseDouble(this.price.getText().toString());
             int quantity = Integer.parseInt(this.quantity.getText().toString());
-            Position position = new Position(id, name, price, quantity, imageName, barcode);
+            Position position = new Position(id, name, price, quantity, imageName, barcode, categoryId);
 
             if (isUpdateMode && !position.equals(currentPosition)) {
                 wasUpdated = true;
@@ -229,12 +263,22 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
         for (int i = 0; i < positions.size(); i++) {
             if (positions.get(i).getId().equals(position.getId())) {
                 String oldName = positions.get(i).getName();
+                int oldCategoryId = positions.get(i).getCategoryId();
+                // TODO: 28.04.2020 !!!!!!!!!!!!!!!!!!
                 positions.set(i, position);
-                //bypassing sold positions list to update position name
+                //bypassing new name to sold positions
                 if (!oldName.equals(position.getName())) {
                     for (int j = 0; j < soldPositions.size(); j++) {
                         if (soldPositions.get(j).getId().equals(position.getId())) {
                             soldPositions.get(j).setName(position.getName());
+                        }
+                    }
+                }
+                //bypassing new category to sold positions
+                if (oldCategoryId != position.getCategoryId()) {
+                    for (int j = 0; j < soldPositions.size(); j++) {
+                        if (soldPositions.get(j).getId().equals(position.getId())) {
+                            soldPositions.get(j).setCategoryId(position.getCategoryId());
                         }
                     }
                 }

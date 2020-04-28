@@ -4,10 +4,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,13 +24,16 @@ import static com.example.caramel.Constants.REVENUE;
 import static com.example.caramel.Constants.SOLD_POSITIONS;
 import static com.example.caramel.DataService.loadPositions;
 import static com.example.caramel.DataService.savePositions;
+import static com.example.caramel.Utils.getFilteredRevenue;
+import static com.example.caramel.Utils.updatePositionsList;
 import static java.lang.Math.round;
 
 
-public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, StateManager {
+public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, StateManager, PopupMenu.OnMenuItemClickListener {
 
     SharedPreferences sharedPreferences;
     ImageButton resetBtn;
+    private Button categoryBtn;
     ArrayList<Position> soldPositions = new ArrayList<>();
     ArrayList<Position> positions = new ArrayList<>();
     Button sellsBtn;
@@ -52,6 +57,9 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         resetBtn = findViewById(R.id.reset_btn);
         resetBtn.setOnClickListener(this);
 
+        categoryBtn = findViewById(R.id.category_btn_history);
+        categoryBtn.setOnClickListener(this);
+
         adapter = new HistoryAdapter(this, R.layout.history_position_adapter, soldPositions);
         listView = findViewById(R.id.sold_position_list);
         listView.setAdapter(adapter);
@@ -62,7 +70,8 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
         positions = loadPositions(sharedPreferences, POSITIONS);
-        soldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
+        soldPositions.clear();
+        soldPositions.addAll(loadPositions(sharedPreferences, SOLD_POSITIONS));
     }
 
     @Override
@@ -93,9 +102,47 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.reset_btn:
                 resetHistoryAndRevenue();
                 break;
+            case R.id.category_btn_history:
+                changeCategory(v);
+                break;
             default:
                 break;
         }
+    }
+
+    private void changeCategory(View v) {
+        PopupMenu menu = new PopupMenu(this, v);
+        menu.setOnMenuItemClickListener(this);
+        menu.inflate(R.menu.category_menu);
+        menu.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        categoryBtn.setText(item.getTitle());
+        switch (item.getItemId()) {
+            case R.id.category_all: {
+                setDataForCategory(Category.ALL);
+                break;
+            }
+            case R.id.category_korea: {
+                setDataForCategory(Category.KOREA);
+                break;
+            }
+        }
+        return true;
+    }
+
+    private void setDataForCategory(Category category) {
+        loadData();
+        if (category.getId() == Category.ALL.getId()) {
+            revenueText.setText(String.valueOf(round(revenue)));
+        } else if (category.getId() == Category.KOREA.getId()) {
+            updatePositionsList(soldPositions, Category.KOREA.getId());
+            double filteredRevenue = getFilteredRevenue(Category.KOREA.getId(), soldPositions);
+            revenueText.setText(String.valueOf(round(filteredRevenue)));
+        }
+        adapter.notifyDataSetChanged();
     }
 
     //reset Data

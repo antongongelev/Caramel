@@ -19,6 +19,17 @@ public class Position implements Serializable, Parcelable {
     private String soldTime;
     private String imageName;
     private String barcode;
+    private int categoryId;
+
+    public Position(String id, String name, double price, int quantity, String imageName, String barcode, int categoryId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.imageName = imageName;
+        this.barcode = barcode;
+        this.categoryId = categoryId;
+    }
 
     public Position(String id, String name, double price, int quantity, String imageName, String barcode) {
         this.id = id;
@@ -27,6 +38,7 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
         this.imageName = imageName;
         this.barcode = barcode;
+        this.categoryId = categoryId;
     }
 
     public Position(String id, String name, double price, int quantity) {
@@ -36,7 +48,6 @@ public class Position implements Serializable, Parcelable {
         this.quantity = quantity;
     }
 
-
     protected Position(Parcel in) {
         id = in.readString();
         name = in.readString();
@@ -45,22 +56,7 @@ public class Position implements Serializable, Parcelable {
         soldTime = in.readString();
         imageName = in.readString();
         barcode = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(name);
-        dest.writeDouble(price);
-        dest.writeInt(quantity);
-        dest.writeString(soldTime);
-        dest.writeString(imageName);
-        dest.writeString(barcode);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        categoryId = in.readInt();
     }
 
     public static final Creator<Position> CREATOR = new Creator<Position>() {
@@ -103,6 +99,10 @@ public class Position implements Serializable, Parcelable {
         this.barcode = barcode;
     }
 
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public String getId() {
         return this.id;
     }
@@ -131,13 +131,18 @@ public class Position implements Serializable, Parcelable {
         return this.barcode;
     }
 
+    public int getCategoryId() {
+        return this.categoryId;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         return obj instanceof Position &&
                 this.name.equals(((Position) obj).getName()) &&
                 this.quantity == ((Position) obj).getQuantity() &&
-                this.price == ((Position) obj).getPrice();
+                this.price == ((Position) obj).getPrice() &&
+                this.categoryId == ((Position) obj).getCategoryId();
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -145,5 +150,22 @@ public class Position implements Serializable, Parcelable {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM HH:mm");
         Date now = new Date();
         return format.format(now);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeDouble(price);
+        dest.writeInt(quantity);
+        dest.writeString(soldTime);
+        dest.writeString(imageName);
+        dest.writeString(barcode);
+        dest.writeInt(categoryId);
     }
 }
