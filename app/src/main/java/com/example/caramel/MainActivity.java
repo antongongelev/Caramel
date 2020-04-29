@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static ArrayList<Position> soldPositions = new ArrayList<>();
     private PositionAdapter adapter;
     private TextView revenueText;
+    private TextView totalText;
+    private String total;
     private double revenue;
 
     // TODO: 26.04.2020 Add categories
@@ -60,10 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadData();
+        countTotal();
 
         //UI data binding
         revenueText = findViewById(R.id.revenue);
         revenueText.setText(String.valueOf(round(revenue)));
+
+        totalText = findViewById(R.id.total);
+        totalText.setText(total);
 
         addPositionBtn = findViewById(R.id.add_btn);
         historyBtn = findViewById(R.id.history_button);
@@ -112,6 +118,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         listView.setAdapter(adapter);
+    }
+
+    private void countTotal() {
+        double result = 0;
+        for (Position position : positions) {
+            result += position.getQuantity() * position.getPrice();
+        }
+        total = String.valueOf(round(result));
     }
 
     @Override
@@ -200,10 +214,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadData();
         if (category.getId() == Category.ALL.getId()) {
             revenueText.setText(String.valueOf(round(revenue)));
+            countTotal();
+            totalText.setText(total);
         } else if (category.getId() == Category.KOREA.getId()) {
             updatePositionsList(positions, Category.KOREA.getId());
             double filteredRevenue = getFilteredRevenue(Category.KOREA.getId(), soldPositions);
             revenueText.setText(String.valueOf(round(filteredRevenue)));
+            countTotal();
+            totalText.setText(total);
         }
         adapter.notifyDataSetChanged();
     }
@@ -254,6 +272,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //add to history
                 positionToSell.setSoldTime(Position.getTime());
                 soldPositions.add(positionToSell);
+
+                countTotal();
+                totalText.setText(total);
 
                 adapter.notifyDataSetChanged();
                 saveData();
