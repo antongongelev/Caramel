@@ -61,7 +61,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     ArrayList<Position> positions;
     static ArrayList<Position> soldPositions = new ArrayList<>();
     Position currentPosition;
-    double revenue;
     boolean isUpdateMode;
     boolean wasUpdated;
     boolean inScannerMode;
@@ -121,7 +120,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
 
         savePositions(editor, positions, POSITIONS);
         savePositions(editor, soldPositions, SOLD_POSITIONS);
-        editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
     }
@@ -129,7 +127,6 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void loadData() {
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
-        revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
         positions = loadPositions(sharedPreferences, POSITIONS);
         soldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
     }
