@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,6 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.caramel.persist.Position;
+import com.example.caramel.R;
+import com.example.caramel.interfaces.Refundable;
+import com.example.caramel.interfaces.Subscriber;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -23,12 +28,14 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
     private Context context;
     private int resource;
     private Refundable refundable;
+    private Subscriber subscriber;
 
     public HistoryAdapter(@NonNull Context context, int resource, @NonNull List<Position> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
         this.refundable = (Refundable) context;
+        this.subscriber = (Subscriber) context;
     }
 
     @SuppressLint("ViewHolder")
@@ -76,5 +83,11 @@ public class HistoryAdapter extends ArrayAdapter<Position> {
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        subscriber.subscribe();
     }
 }

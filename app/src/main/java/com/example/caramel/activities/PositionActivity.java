@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -22,21 +22,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.caramel.util.CaptureAct;
+import com.example.caramel.persist.Category;
+import com.example.caramel.persist.Position;
+import com.example.caramel.R;
+import com.example.caramel.interfaces.StateManager;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.example.caramel.Constants.CARAMEL_DATA;
-import static com.example.caramel.Constants.CURRENT_POSITION;
-import static com.example.caramel.Constants.POSITIONS;
-import static com.example.caramel.Constants.REVENUE;
-import static com.example.caramel.Constants.SOLD_POSITIONS;
-import static com.example.caramel.DataService.loadImageFromStorage;
-import static com.example.caramel.DataService.loadPositions;
-import static com.example.caramel.DataService.savePositions;
-import static com.example.caramel.DataService.saveToInternalStorage;
+import static com.example.caramel.util.Constants.CARAMEL_DATA;
+import static com.example.caramel.util.Constants.CURRENT_POSITION;
+import static com.example.caramel.util.Constants.POSITIONS;
+import static com.example.caramel.util.Constants.REVENUE;
+import static com.example.caramel.util.Constants.SOLD_POSITIONS;
+import static com.example.caramel.util.DataService.loadImageFromStorage;
+import static com.example.caramel.util.DataService.loadPositions;
+import static com.example.caramel.util.DataService.savePositions;
+import static com.example.caramel.util.DataService.saveToInternalStorage;
 
 public class PositionActivity extends AppCompatActivity implements View.OnClickListener, StateManager, PopupMenu.OnMenuItemClickListener {
 

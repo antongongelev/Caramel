@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F4D8F9"
     android:orientation="vertical"
-    tools:context=".HistoryActivity">
+    tools:context=".activities.HistoryActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout_history"
@@ -21,6 +21,7 @@
             android:background="#00FFFFFF"
             android:backgroundTint="#FFFFFF"
             android:text="Продажи"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.808"

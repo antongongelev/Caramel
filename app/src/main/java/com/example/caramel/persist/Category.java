@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.persist;
 
 public enum Category {
 

@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.util;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.example.caramel.persist.Position;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,8 +18,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import static com.example.caramel.Constants.POSITIONS;
-import static com.example.caramel.Constants.SOLD_POSITIONS;
+import static com.example.caramel.util.Constants.POSITIONS;
+import static com.example.caramel.util.Constants.SOLD_POSITIONS;
 
 public class DataService {
 

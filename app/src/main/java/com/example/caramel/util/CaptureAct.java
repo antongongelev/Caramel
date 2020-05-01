@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.util;
 
 import com.journeyapps.barcodescanner.CaptureActivity;
 

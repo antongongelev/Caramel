@@ -1,4 +1,4 @@
-package com.example.caramel;
+package com.example.caramel.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,20 +16,26 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.caramel.persist.Category;
+import com.example.caramel.adapters.HistoryAdapter;
+import com.example.caramel.persist.Position;
+import com.example.caramel.R;
+import com.example.caramel.interfaces.Refundable;
+import com.example.caramel.interfaces.StateManager;
+import com.example.caramel.interfaces.Subscriber;
+
 import java.util.ArrayList;
 
-import static com.example.caramel.Constants.CARAMEL_DATA;
-import static com.example.caramel.Constants.POSITIONS;
-import static com.example.caramel.Constants.REVENUE;
-import static com.example.caramel.Constants.SOLD_POSITIONS;
-import static com.example.caramel.DataService.loadPositions;
-import static com.example.caramel.DataService.savePositions;
-import static com.example.caramel.Utils.getFilteredRevenue;
-import static com.example.caramel.Utils.updatePositionsList;
+import static com.example.caramel.util.Constants.CARAMEL_DATA;
+import static com.example.caramel.util.Constants.POSITIONS;
+import static com.example.caramel.util.Constants.SOLD_POSITIONS;
+import static com.example.caramel.util.DataService.loadPositions;
+import static com.example.caramel.util.DataService.savePositions;
+import static com.example.caramel.util.Utils.updatePositionsList;
 import static java.lang.Math.round;
 
 
-public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, StateManager, PopupMenu.OnMenuItemClickListener {
+public class HistoryActivity extends AppCompatActivity implements View.OnClickListener, Refundable, Subscriber, StateManager, PopupMenu.OnMenuItemClickListener {
 
     SharedPreferences sharedPreferences;
     ImageButton resetBtn;
@@ -41,16 +47,20 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     ListView listView;
     TextView revenueText;
     HistoryAdapter adapter;
-    double revenue;
+    String revenue;
+    Category category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        category = Category.ALL;
+
         loadData();
+        countRevenue();
 
         revenueText = findViewById(R.id.revenue_history);
-        revenueText.setText(String.valueOf(round(revenue)));
+        revenueText.setText(revenue);
 
         sellsBtn = findViewById(R.id.sells_button);
         sellsBtn.setOnClickListener(this);
@@ -66,10 +76,25 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         listView.setAdapter(adapter);
     }
 
+    private void countRevenue() {
+        double result = 0;
+        if (category.equals(Category.ALL)) {
+            for (Position soldPosition : soldPositions) {
+                result += soldPosition.getPrice();
+            }
+        } else if (category.equals(Category.KOREA)) {
+            for (Position soldPosition : soldPositions) {
+                if (Category.getCategoryById(soldPosition.getCategoryId()).equals(Category.KOREA)) {
+                    result += soldPosition.getPrice();
+                }
+            }
+        }
+        revenue = String.valueOf(round(result));
+    }
+
     @Override
     public void loadData() {
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
-        revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
         positions = loadPositions(sharedPreferences, POSITIONS);
         ArrayList<Position> loadedSoldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
         soldPositions.clear();
@@ -85,7 +110,6 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
 
         savePositions(editor, positions, POSITIONS);
         savePositions(editor, allSoldPositions, SOLD_POSITIONS);
-        editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
     }
@@ -124,29 +148,26 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         categoryBtn.setText(item.getTitle());
+        loadData();
         switch (item.getItemId()) {
             case R.id.category_all: {
-                setDataForCategory(Category.ALL);
+                category = Category.ALL;
                 break;
             }
             case R.id.category_korea: {
-                setDataForCategory(Category.KOREA);
+                category = Category.KOREA;
+                updatePositionsList(soldPositions, Category.KOREA.getId());
                 break;
             }
         }
+        adapter.notifyDataSetChanged();
         return true;
     }
 
-    private void setDataForCategory(Category category) {
-        loadData();
-        if (category.getId() == Category.ALL.getId()) {
-            revenueText.setText(String.valueOf(round(revenue)));
-        } else if (category.getId() == Category.KOREA.getId()) {
-            updatePositionsList(soldPositions, Category.KOREA.getId());
-            double filteredRevenue = getFilteredRevenue(Category.KOREA.getId(), soldPositions);
-            revenueText.setText(String.valueOf(round(filteredRevenue)));
-        }
-        adapter.notifyDataSetChanged();
+    @Override
+    public void subscribe() {
+        countRevenue();
+        revenueText.setText(revenue);
     }
 
     //reset Data
@@ -161,8 +182,6 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                     public void onClick(DialogInterface dialog, int which) {
                         soldPositions.clear();
                         allSoldPositions.clear();
-                        revenue = 0;
-                        revenueText.setText(String.valueOf(round(revenue)));
                         adapter.notifyDataSetChanged();
                         saveData();
                         Toast.makeText(HistoryActivity.this, "Данные о продажах и выручке сброшены", Toast.LENGTH_LONG).show();
@@ -185,13 +204,13 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
 
     private void removeSoldPositions(Position positionToRemove) {
         for (Position position : soldPositions) {
-            if (position.equals(positionToRemove)) {
+            if (position.equals(positionToRemove) && position.getSoldTime().equals(positionToRemove.getSoldTime())) {
                 soldPositions.remove(position);
                 break;
             }
         }
         for (Position position : allSoldPositions) {
-            if (position.equals(positionToRemove)) {
+            if (position.equals(positionToRemove) && position.getSoldTime().equals(positionToRemove.getSoldTime())) {
                 allSoldPositions.remove(position);
                 break;
             }
@@ -201,12 +220,9 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void refund(int position) {
         Position positionToRefund = adapter.getItem(position);
-
         if (positionToRefund != null) {
             boolean isRefundSuccessful = refundPosition(positionToRefund);
             if (isRefundSuccessful) {
-                revenue -= positionToRefund.getPrice();
-                revenueText.setText(String.valueOf(round(revenue)));
                 removeSoldPositions(positionToRefund);
                 adapter.notifyDataSetChanged();
                 Toast.makeText(this, "Продажа отменена", Toast.LENGTH_LONG).show();
