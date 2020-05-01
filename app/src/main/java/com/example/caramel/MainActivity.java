@@ -24,6 +24,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static com.example.caramel.Constants.CARAMEL_DATA;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button categoryBtn;
     private ListView listView;
     static ArrayList<Position> positions = new ArrayList<>();
+    static ArrayList<Position> allPositions = new ArrayList<>();
     static ArrayList<Position> soldPositions = new ArrayList<>();
     private PositionAdapter adapter;
     private TextView revenueText;
@@ -53,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String total;
     private double revenue;
 
-    // TODO: 26.04.2020 Add categories
     // TODO: 26.04.2020 Add Cart and maybe replace sell button to TO_CART
 
     @SuppressLint("WrongViewCast")
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final Position positionToDelete = adapter.getItem(position);
                 new AlertDialog.Builder(MainActivity.this)
                         .setIcon(android.R.drawable.ic_delete)
                         .setTitle("Удалить товар?")
@@ -106,10 +108,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String positionName = adapter.getItem(position).getName();
-                                positions.remove(position);
+                                removeById(positionToDelete.getId());
                                 adapter.notifyDataSetChanged();
-                                Toast.makeText(MainActivity.this, String.format("Товар \'%s\' успешно удален", positionName), Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, String.format("Товар \'%s\' успешно удален", positionToDelete.getName()), Toast.LENGTH_LONG).show();
                                 saveData();
                             }
                         })
@@ -118,6 +119,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         listView.setAdapter(adapter);
+    }
+
+    //remove position from both lists
+    private void removeById(String id) {
+        Iterator<Position> iteratorOne = positions.iterator();
+        while (iteratorOne.hasNext()) {
+            if (iteratorOne.next().getId().equals(id)) {
+                iteratorOne.remove();
+                break;
+            }
+        }
+        Iterator<Position> iteratorTwo = allPositions.iterator();
+        while (iteratorTwo.hasNext()) {
+            if (iteratorTwo.next().getId().equals(id)) {
+                iteratorTwo.remove();
+                break;
+            }
+        }
     }
 
     private void countTotal() {
@@ -133,35 +152,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        savePositions(editor, positions, POSITIONS);
+        savePositions(editor, allPositions, POSITIONS);
         savePositions(editor, soldPositions, SOLD_POSITIONS);
         editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
     }
 
-    // TODO: 28.04.2020 PROBLEM IS HERE _ WE LOSE LINKK TO OUR OBJECCTTTTTTT
     @Override
     public void loadData() {
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
+        ArrayList<Position> loadedPositions = loadPositions(sharedPreferences, POSITIONS);
         positions.clear();
-        positions.addAll(loadPositions(sharedPreferences, POSITIONS));
+        allPositions.clear();
+        positions.addAll(loadedPositions);
+        allPositions.addAll(loadedPositions);
         soldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
-        populatePositionsWithTestData();
     }
 
     @Override
     public void onBackPressed() {
-    }
-
-    //population positions with test data
-    private void populatePositionsWithTestData() {
-        if (positions.size() == 0) {
-            positions.add(new Position(UUID.randomUUID().toString(), "Lipstick", 25.1, 4));
-            positions.add(new Position(UUID.randomUUID().toString(), "Cream", 500, 7));
-            positions.add(new Position(UUID.randomUUID().toString(), "Shampoo", 800.50, 10));
-        }
     }
 
     @Override

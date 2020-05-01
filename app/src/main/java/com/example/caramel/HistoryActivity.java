@@ -35,6 +35,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     ImageButton resetBtn;
     private Button categoryBtn;
     ArrayList<Position> soldPositions = new ArrayList<>();
+    ArrayList<Position> allSoldPositions = new ArrayList<>();
     ArrayList<Position> positions = new ArrayList<>();
     Button sellsBtn;
     ListView listView;
@@ -70,8 +71,11 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         sharedPreferences = getSharedPreferences(CARAMEL_DATA, MODE_PRIVATE);
         revenue = Double.parseDouble(sharedPreferences.getString(REVENUE, "0"));
         positions = loadPositions(sharedPreferences, POSITIONS);
+        ArrayList<Position> loadedSoldPositions = loadPositions(sharedPreferences, SOLD_POSITIONS);
         soldPositions.clear();
-        soldPositions.addAll(loadPositions(sharedPreferences, SOLD_POSITIONS));
+        allSoldPositions.clear();
+        soldPositions.addAll(loadedSoldPositions);
+        allSoldPositions.addAll(loadedSoldPositions);
     }
 
     @Override
@@ -80,7 +84,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         savePositions(editor, positions, POSITIONS);
-        savePositions(editor, soldPositions, SOLD_POSITIONS);
+        savePositions(editor, allSoldPositions, SOLD_POSITIONS);
         editor.putString(REVENUE, String.valueOf(revenue));
 
         editor.apply();
@@ -156,6 +160,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         soldPositions.clear();
+                        allSoldPositions.clear();
                         revenue = 0;
                         revenueText.setText(String.valueOf(round(revenue)));
                         adapter.notifyDataSetChanged();
@@ -178,6 +183,21 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         return false;
     }
 
+    private void removeSoldPositions(Position positionToRemove) {
+        for (Position position : soldPositions) {
+            if (position.equals(positionToRemove)) {
+                soldPositions.remove(position);
+                break;
+            }
+        }
+        for (Position position : allSoldPositions) {
+            if (position.equals(positionToRemove)) {
+                allSoldPositions.remove(position);
+                break;
+            }
+        }
+    }
+
     @Override
     public void refund(int position) {
         Position positionToRefund = adapter.getItem(position);
@@ -187,7 +207,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             if (isRefundSuccessful) {
                 revenue -= positionToRefund.getPrice();
                 revenueText.setText(String.valueOf(round(revenue)));
-                adapter.remove(positionToRefund);
+                removeSoldPositions(positionToRefund);
                 adapter.notifyDataSetChanged();
                 Toast.makeText(this, "Продажа отменена", Toast.LENGTH_LONG).show();
                 saveData();
